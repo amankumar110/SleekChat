@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.auth.SignupFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/container"
+        android:paddingTop="40dp"
+        android:paddingHorizontal="20dp"
+        android:paddingBottom="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:textSize="18sp"
+            android:id="@+id/tv_number_register_description"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/poppins_bold"
+            android:text="@string/number_register_description_text"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <in.amankumar110.chatapp.ui.customviews.CountrySelectionView
+            android:layout_width="wrap_content"
+            android:elevation="10dp"
+            android:layout_marginTop="20dp"
+            android:id="@+id/country_selection_view"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_number_register_description" />
+
+        <EditText
+            android:id="@+id/et_phone_number"
+            android:layout_width="0dp"
+            android:maxLength="10"
+            android:layout_height="54dp"
+            android:layout_marginStart="20dp"
+            android:background="@drawable/curved_border_background"
+            android:hint="@string/phone_number_hint"
+            android:inputType="phone"
+            android:textColor="?android:textColor"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="5dp"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/country_selection_view"
+            app:layout_constraintTop_toTopOf="@id/country_selection_view" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_send_otp"
+            style="@style/FilledButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="30dp"
+            android:layout_marginTop="40dp"
+            android:text="@string/button_otp_text"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/et_phone_number" />
+
+        <com.mukeshsolanki.OtpView
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:clickable="true"
+            android:layout_marginTop="20dp"
+            android:id="@+id/otp_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:textColor="?android:textColor"
+            app:OtpItemCount="6"
+            app:OtpItemSpacing="6dp"
+            app:OtpLineColor="?android:colorPrimary"
+            app:OtpState_filled="false"
+            app:OtpViewType="line"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btn_send_otp" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_verify_otp"
+            style="@style/FilledButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="30dp"
+            android:layout_marginTop="40dp"
+            android:text="@string/button_verify_otp_text"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/otp_view" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</FrameLayout>

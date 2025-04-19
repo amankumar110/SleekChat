@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="user"
+            type="in.amankumar110.chatapp.models.user.User" />
+    </data>
+
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/user_container"
+            android:layout_margin="5dp"
+            android:layout_width="match_parent"
+            style="@style/cardStyle"
+            app:cardCornerRadius="5dp"
+            android:layout_height="wrap_content">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:paddingHorizontal="15dp"
+                android:background="?attr/colorSurfaceVariant"
+                android:paddingVertical="10dp"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/iv_user"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:src="@drawable/ic_add_user"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:textColor="?android:textColor"
+                    android:textAlignment="center"
+                    android:includeFontPadding="false"
+                    android:textSize="16sp"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="20dp"
+                    android:text="@{user.phoneNumber}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/btn_add"
+                    app:layout_constraintStart_toEndOf="@id/iv_user"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:contentDescription="TODO"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    app:tint="?attr/colorSurface"
+                    android:src="@drawable/ic_add"
+                    android:id="@+id/btn_add"/>
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+</layout>

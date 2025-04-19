@@ -1,0 +1,40 @@
+<resources>
+    <string name="app_name">ChatApp</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank chatFragment</string>
+    <string name="btn_signup_text">Lets Get Started</string>
+    <string name="login_text">I Already Have One</string>
+    <string name="feature_communication_description">Communicate Nation wide without Worries</string>
+    <string name="feature_communication_tagline">Feelings Have No Boundaries</string>
+    <string name="feature_dark_mode_description">Night Hustlers, Dont Worry We Got You.</string>
+    <string name="feature_dark_mode_tagline">Communicate With Ease</string>
+    <string name="number_register_description_text">Register your Phone Number</string>
+    <string name="phone_number_hint">xxxxxxxxxx</string>
+    <string name="button_otp_text">Send OTP</string>
+    <string name="button_verify_otp_text">Verfiy OTP</string>
+    <string name="firebase_exception_message">An Error Occured While Signing Up.</string>
+    <string name="unknown_exception_message">An Unknown Exception Occured</string>
+    <string name="APP_PREF_KEY">chat_app_prefs</string>
+    <string name="TOKEN_KEY">token_login_key</string>
+    <string name="invalid_contact_number_message">The Phone Number was Incorrect</string>
+    <string name="token_not_found_exception">Token Couldnot Be Found, Please Sign Up.</string>
+    <string name="user_not_logged_in_error_message">User Not Logged In, Please Sign in</string>
+    <string name="user_not_exist_message">This User Doesnot Exist</string>
+    <string name="otp_not_sent_message">One Time Password Couldnot Be Sent, Try Again.</string>
+    <string name="number_not_verified_message">OTP was Wrong, Try Again.</string>
+    <string name="no_user_found_message">No User Found!</string>
+    <string name="search_phone_number_hint">Get Connected To Friends</string>
+    <string name="no_users_added_message">Use the Search Bar to Make New Friends.</string>
+    <string name="chat_sessions_heading_text">Recent Contacts</string>
+    <string name="send_message_text">Compose a Message</string>
+    <string name="no_last_message_text">Start a New Conversation</string>
+    <string name="no_message_text">Send a Message To Begin a Conversation</string>
+    <string name="last_message_time_text">Last Seen at</string>
+    <string name="login_error_message">An Error Occured While Loging In</string>
+    <string name="empty_text_warning">Message Can\'t be Empty</string>
+    <string name="online_status">Online</string>
+    <string name="offline_status">Offline</string>
+    <string name="in_chat_status">Live</string>
+    <string name="message_updated">Message Updated Successfully</string>
+    <string name="message_update_failed">Message Failed to Update</string>
+</resources>

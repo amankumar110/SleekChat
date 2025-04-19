@@ -1,0 +1,17 @@
+[
+  { "name": "Pakistan", "code": "+92", "flag": "https://flagcdn.com/w320/pk.png" },
+  { "name": "India", "code": "+91", "flag": "https://flagcdn.com/w320/in.png" },
+  { "name": "United States", "code": "+1", "flag": "https://flagcdn.com/w320/us.png" },
+  { "name": "United Kingdom", "code": "+44", "flag": "https://flagcdn.com/w320/gb.png" },
+  { "name": "Canada", "code": "+1", "flag": "https://flagcdn.com/w320/ca.png" },
+  { "name": "Australia", "code": "+61", "flag": "https://flagcdn.com/w320/au.png" },
+  { "name": "Germany", "code": "+49", "flag": "https://flagcdn.com/w320/de.png" },
+  { "name": "France", "code": "+33", "flag": "https://flagcdn.com/w320/fr.png" },
+  { "name": "Italy", "code": "+39", "flag": "https://flagcdn.com/w320/it.png" },
+  { "name": "Spain", "code": "+34", "flag": "https://flagcdn.com/w320/es.png" },
+  { "name": "China", "code": "+86", "flag": "https://flagcdn.com/w320/cn.png" },
+  { "name": "Japan", "code": "+81", "flag": "https://flagcdn.com/w320/jp.png" },
+  { "name": "Russia", "code": "+7", "flag": "https://flagcdn.com/w320/ru.png" },
+  { "name": "Brazil", "code": "+55", "flag": "https://flagcdn.com/w320/br.png" },
+  { "name": "South Africa", "code": "+27", "flag": "https://flagcdn.com/w320/za.png" }
+]

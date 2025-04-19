@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="10dp"
+    android:background="@drawable/curved_border_background"
+    android:layout_height="50dp">
+
+    <EditText
+        android:inputType="phone"
+        android:maxLength="13"
+        android:singleLine="true"
+        android:id="@+id/et_search_user"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:textSize="14sp"
+        android:textColor="?android:textColor"
+        android:textColorHint="?android:textColorHint"
+        android:layout_weight="8"
+        android:hint="@string/search_phone_number_hint"
+        android:background="@null"
+        />
+
+    <ImageView
+        android:id="@+id/btn_search"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:src="@drawable/ic_search"
+        app:tint="?android:textColorHint"/>
+
+    <ImageView
+        android:visibility="gone"
+        android:id="@+id/btn_close"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:src="@drawable/ic_close"
+        app:tint="?android:textColorHint"/>
+
+</LinearLayout>

@@ -1,0 +1,110 @@
+package in.amankumar110.chatapp.data.repository;
+
+import android.util.Log;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.inject.Inject;
+
+import in.amankumar110.chatapp.data.remote.RealtimeMessageService;
+import in.amankumar110.chatapp.domain.repository.RealtimeMessageRepository;
+import in.amankumar110.chatapp.models.chat.Message;
+
+public class RealtimeMessageRepositoryImpl implements RealtimeMessageRepository {
+
+    private final RealtimeMessageService realtimeMessageService;
+
+    @Inject
+    public RealtimeMessageRepositoryImpl(RealtimeMessageService realtimeMessageService) {
+
+        this.realtimeMessageService = realtimeMessageService;
+    }
+
+    @Override
+    public void addMessage(Message message, String sessionId, RealtimeMessageListener<Void> listener) {
+
+        message.setId(generateUniqueId(message.getSenderUId(),message.getReceiverUId(),message.getSentAt()));
+
+        realtimeMessageService.sendMessage(message, sessionId, task -> {
+
+            if(task.isSuccessful())
+                listener.onSuccess(null);
+            else
+                listener.onError(task.getException());
+        });
+    }
+
+    @Override
+    public void onNewMessage(String sessionId, RealtimeMessageListener<Message>listener) {
+
+        realtimeMessageService.getMessages(sessionId, new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
+
+                if (!snapshot.exists()) {
+                    listener.onError(new Exception("Snapshot does not exist"));
+                return;
+                }
+
+                Message message = snapshot.getValue(Message.class);
+
+                Log.v("MessageR",message.toString());
+
+                listener.onSuccess(message);
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("Realtime", "Listener canceled: " + error.getMessage());
+                listener.onError(error.toException());
+            }
+        });
+
+    }
+
+    @Override
+    public void deleteAllMessages(String sessionId, RealtimeMessageListener<Void> listener) {
+
+        realtimeMessageService.deleteAllMessages(sessionId, task -> {
+
+            if(task.isSuccessful())
+                listener.onSuccess(null);
+            else
+                listener.onError(task.getException());
+        });
+    }
+
+    @Override
+    public String generateUniqueId(String sender, String receiver, Long sentAt) {
+        return sender+"_"+receiver+"_"+sentAt;
+    }
+
+
+}

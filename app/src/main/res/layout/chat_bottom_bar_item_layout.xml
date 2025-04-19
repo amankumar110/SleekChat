@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardElevation="0dp"
+        android:layout_margin="10dp"
+        style="@style/cardStyle">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingHorizontal="15dp"
+            android:paddingVertical="15dp">
+
+                <in.amankumar110.chatapp.ui.customviews.ScrollableEditText
+                    android:layout_weight="7"
+                    android:id="@+id/et_message"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:hint="@string/send_message_text"
+                    android:inputType="textMultiLine"
+                    android:maxLines="3"
+                    android:textColor="?android:textColor"
+                    android:textColorHint="?android:textColorHint"
+                    android:textSize="16sp" />
+
+
+            <ImageView
+                android:id="@+id/btn_send"
+                android:layout_width="0dp"
+                android:layout_height="20dp"
+                android:layout_marginStart="10dp"
+                android:layout_weight="1"
+                android:src="@drawable/ic_send"
+                app:tint="?attr/colorSurface" />
+
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+</LinearLayout>

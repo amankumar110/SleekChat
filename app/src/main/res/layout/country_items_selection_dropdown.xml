@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:background="@drawable/curved_border_background"
+    android:layout_height="wrap_content">
+
+    <include
+        android:id="@+id/selected_view_container"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+
+        layout="@layout/selected_country_display_layout"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        android:orientation="vertical"
+        android:id="@+id/rv_country_item"
+        tools:listitem="@layout/country_code_item_layout"/>
+
+</LinearLayout>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:gravity="center"
+    android:layout_height="wrap_content"
+    android:id="@+id/container">
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/cardStyle"
+        android:layout_margin="10dp">
+
+        <TextView
+            android:maxWidth="200dp"
+            android:textAlignment="center"
+            android:textSize="14sp"
+            android:textColor="?android:textColor"
+            android:padding="10dp"
+            android:fontFamily="@font/poppins_regular"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/no_message_text"/>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</LinearLayout>
