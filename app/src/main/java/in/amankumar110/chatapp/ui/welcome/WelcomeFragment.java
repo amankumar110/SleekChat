@@ -27,9 +27,6 @@ import in.amankumar110.chatapp.viewmodels.user.RealtimeStatusViewModel;
 @AndroidEntryPoint
 public class WelcomeFragment extends Fragment {
 
-    // ChatFragment should always be instantiated using newInstance() method
-    // otherwise it might trigger null pointer exception
-
     private FragmentWelcomeBinding binding;
     private NavController navController;
 
@@ -62,11 +59,6 @@ public class WelcomeFragment extends Fragment {
         binding.btnSignup.setOnClickListener(v -> navigateToSignupScreen());
 
 
-    }
-
-    private void hideLoader() {
-        binding.spinKit.setVisibility(View.GONE);
-        binding.btnSignup.setAlpha(1);
     }
 
     private void navigateToSignupScreen() {

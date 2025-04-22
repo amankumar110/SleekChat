@@ -43,22 +43,7 @@
             app:layout_constraintTop_toBottomOf="@id/viewpager_features"/>
 
 
-        <com.github.ybq.android.spinkit.SpinKitView
-            android:id="@+id/spin_kit"
-            style="@style/SpinKitView.Large.ThreeBounce"
-            android:layout_marginBottom="10dp"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_gravity="center"
-            app:SpinKit_Color="?attr/colorPrimary"
-            app:layout_constraintBottom_toTopOf="@+id/btn_signup"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
         <androidx.appcompat.widget.AppCompatButton
-            android:alpha="0.6"
-            android:enabled="false"
-            android:clickable="false"
             android:id="@+id/btn_signup"
             style="@style/OutlinedButton"
             android:layout_width="match_parent"

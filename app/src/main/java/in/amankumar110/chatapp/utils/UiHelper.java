@@ -21,6 +21,7 @@ import androidx.annotation.StyleRes;
 
 import in.amankumar110.chatapp.MainActivity;
 import in.amankumar110.chatapp.R;
+import in.amankumar110.chatapp.SplashActivity;
 
 public class UiHelper {
 
@@ -65,5 +66,9 @@ public class UiHelper {
             InputMethodManager imm = (InputMethodManager) editText.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT);
         }, 100);
+    }
+
+    public static void showInternetWarning(Context context) {
+        Toast.makeText(context, context.getString(R.string.internet_not_available), Toast.LENGTH_SHORT).show();
     }
 }

@@ -7,7 +7,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import java.util.List;
 
-import in.amankumar110.chatapp.utils.AppFeatures;
+import in.amankumar110.chatapp.enums.AppFeatures;
 import in.amankumar110.chatapp.ui.welcome.fragments.FeatureFragment;
 import in.amankumar110.chatapp.utils.ThemeManager;
 

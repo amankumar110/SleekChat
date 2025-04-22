@@ -12,10 +12,14 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 import java.util.Objects;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import in.amankumar110.chatapp.utils.AnimationUtil;
+import in.amankumar110.chatapp.utils.InternetHelper;
 import in.amankumar110.chatapp.utils.UiHelper;
 import in.amankumar110.chatapp.viewmodels.token.RemoteTokenViewModel;
 import jakarta.inject.Inject;
@@ -25,24 +29,36 @@ public class SplashActivity extends AppCompatActivity {
 
     public static final String ARG_IS_LOGGED_IN = "is_Logged_in";
     private boolean isLoginComplete = false;
-
-    private RemoteTokenViewModel remoteTokenViewModel;
-
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState); // ✅ This should be at the top!
-
-        remoteTokenViewModel = new ViewModelProvider(this).get(RemoteTokenViewModel.class);
 
         // Setup Android 12+ splash screen
         SplashScreen splashScreen = SplashScreen.installSplashScreen(this);
         splashScreen.setKeepOnScreenCondition(() -> !isLoginComplete); // Inverted condition
 
-        // Init ViewModel
-        remoteTokenViewModel = new ViewModelProvider(this).get(RemoteTokenViewModel.class);
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-        // Start login logic
-        requestLogin();
+        if (!InternetHelper.isInternetAvailable(this)) {
+            // No internet – can’t validate session
+            exitAppWithInternetWarning();
+        } else if (user==null) {
+            // User never signed in
+            navigateToLoginScreen();
+        } else {
+            // Try to refresh token to ensure the session is valid
+            user.getIdToken(true).addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    // Token is valid → go to main screen
+                    navigateToMainScreen();
+                } else {
+                    // Token refresh failed → clear session and go to login
+                    FirebaseAuth.getInstance().signOut();
+                    navigateToLoginScreen();
+                }
+            });
+        }
 
         // Setup UI
         EdgeToEdge.enable(this);
@@ -54,35 +70,18 @@ public class SplashActivity extends AppCompatActivity {
         });
     }
 
-    public void requestLogin() {
-        remoteTokenViewModel.getRemoteToken();
+    private void exitAppWithInternetWarning() {
+        UiHelper.showInternetWarning(this);
+        isLoginComplete = true;
+        finishAffinity();
 
-        // ✅ Observe token and decide navigation
-        remoteTokenViewModel.token.observe(this, token -> {
-
-            if (isLoginComplete) return;
-
-            if (remoteTokenViewModel.getErrorMessage() != null) {
-                isLoginComplete = true;
-                UiHelper.showMessage(this, R.string.login_error_message);
-                finishAffinity();
-                return;
-            }
-
-            isLoginComplete = true;
-            if (Boolean.TRUE.equals(remoteTokenViewModel.shouldSignIn.getValue())) {
-                navigateToLoginScreen();
-            } else {
-                navigateToMainScreen();
-            }
-
-        });
     }
 
     private void navigateToMainScreen() {
         Intent intent = new Intent(this, MainActivity.class);
         intent.putExtra(ARG_IS_LOGGED_IN,true);
         startActivity(intent);
+        isLoginComplete = true;
         finish();
     }
 
@@ -90,6 +89,7 @@ public class SplashActivity extends AppCompatActivity {
         Intent intent = new Intent(this, MainActivity.class);
         intent.putExtra(ARG_IS_LOGGED_IN,false);
         startActivity(intent);
+        isLoginComplete = true;
         finish();
     }
 

@@ -2,6 +2,7 @@ package in.amankumar110.chatapp;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.TypedValue;
 import android.widget.Button;
 import android.widget.Toast;
@@ -50,6 +51,8 @@ public class MainActivity extends AppCompatActivity {
 
         NavInflater navInflater = navController.getNavInflater();
         NavGraph navGraph = navInflater.inflate(R.navigation.nav_graph); // your nav_graph file
+
+        Log.v("LoggedIn", String.valueOf(isLoggedIn));
 
         if (isLoggedIn) {
             navGraph.setStartDestination(R.id.mainFragment); // change to your main fragment ID

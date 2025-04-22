@@ -1,4 +1,4 @@
-package in.amankumar110.chatapp.utils;
+package in.amankumar110.chatapp.enums;
 
 import java.util.Arrays;
 import java.util.List;
