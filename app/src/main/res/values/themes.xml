@@ -3,12 +3,13 @@
     <style name="Base.Theme.ChatApp" parent="Theme.Material3.DayNight.NoActionBar">
 
 
-        <item name="colorPrimary">@color/colorPrimaryLight</item>
-        <item name="android:colorBackground">@color/colorBackgroundLight</item>
-        <item name="android:textColor">@color/colorTextLight</item>
-        <item name="android:textColorHint">@color/colorHintLight</item>
-        <item name="colorSurfaceVariant">@color/colorSurfaceVariantLight</item>
-        <item name="colorSurface">@color/colorSurfaceLight</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="android:colorBackground">@color/colorBackground</item>
+        <item name="android:textColor">@color/colorText</item>
+        <item name="android:textColorHint">@color/colorHint</item>
+        <item name="colorSurfaceVariant">@color/colorSurfaceVariant</item>
+        <item name="colorSurface">@color/colorSurface</item>
+        <item name="android:windowBackground">@color/colorBackground</item>
 
     </style>
 

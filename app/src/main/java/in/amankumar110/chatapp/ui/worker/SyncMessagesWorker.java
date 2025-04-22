@@ -4,7 +4,6 @@ package in.amankumar110.chatapp.ui.worker;
 import android.content.Context;
 import android.util.Log;
 
-import androidx.hilt.work.HiltWorker;
 import androidx.work.ListenableWorker;
 import androidx.work.WorkerParameters;
 
@@ -17,7 +16,6 @@ import com.google.gson.reflect.TypeToken;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.List;
-import java.util.concurrent.Executor;
 
 import in.amankumar110.chatapp.data.remote.MessageService;
 import in.amankumar110.chatapp.data.remote.RealtimeMessageService;
@@ -25,10 +23,8 @@ import in.amankumar110.chatapp.data.repository.MessageRepositoryImpl;
 import in.amankumar110.chatapp.data.repository.RealtimeMessageRepositoryImpl;
 import in.amankumar110.chatapp.domain.repository.MessageRepository;
 import in.amankumar110.chatapp.domain.repository.RealtimeMessageRepository;
-import in.amankumar110.chatapp.domain.usecases.message.SyncMessagesUseCase;
+import in.amankumar110.chatapp.domain.usecases.message.realtimesync.SyncMessagesUseCase;
 import in.amankumar110.chatapp.models.chat.Message;
-import in.amankumar110.chatapp.module.AppComponent;
-import in.amankumar110.chatapp.module.AppModule;
 import jakarta.inject.Inject;
 
 public class SyncMessagesWorker extends ListenableWorker {
@@ -40,7 +36,6 @@ public class SyncMessagesWorker extends ListenableWorker {
     private final MessageRepository messageRepository = new MessageRepositoryImpl(messageService);
     private final RealtimeMessageRepository realtimeMessageRepository = new RealtimeMessageRepositoryImpl(realtimeMessageService);
     private final SyncMessagesUseCase syncMessagesUseCase = new SyncMessagesUseCase(messageRepository, realtimeMessageRepository);
-
 
     @Inject
     public SyncMessagesWorker(@NonNull Context context,

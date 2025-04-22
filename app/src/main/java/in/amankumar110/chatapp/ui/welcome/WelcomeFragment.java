@@ -32,7 +32,7 @@ public class WelcomeFragment extends Fragment {
 
     private FragmentWelcomeBinding binding;
     private NavController navController;
-    private RemoteTokenViewModel remoteTokenViewModel;
+
 
     public WelcomeFragment() {
 
@@ -41,7 +41,7 @@ public class WelcomeFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        remoteTokenViewModel = new ViewModelProvider(this).get(RemoteTokenViewModel.class);
+
     }
 
     @Override
@@ -61,28 +61,7 @@ public class WelcomeFragment extends Fragment {
 
         binding.btnSignup.setOnClickListener(v -> navigateToSignupScreen());
 
-        tryAutoLogin();
 
-        remoteTokenViewModel.errorMessage.observe(getViewLifecycleOwner(),error -> {
-            UiHelper.showMessage(requireContext(),R.string.login_error_message);
-        });
-    }
-
-    public void tryAutoLogin() {
-
-        remoteTokenViewModel.getRemoteToken();
-
-        remoteTokenViewModel.token.observe(getViewLifecycleOwner(), token -> {
-
-            if(token == null)
-                return;
-
-            if(Boolean.TRUE.equals(remoteTokenViewModel.shouldSignIn.getValue())) {
-                AnimationUtil.fadeIn(binding.btnSignup, this::hideLoader);
-            }
-
-            navigateToMainScreen();
-        });
     }
 
     private void hideLoader() {

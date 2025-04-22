@@ -103,7 +103,11 @@ public class RealtimeMessageRepositoryImpl implements RealtimeMessageRepository 
 
     @Override
     public String generateUniqueId(String sender, String receiver, Long sentAt) {
-        return sender+"_"+receiver+"_"+sentAt;
+        // Sort sender and receiver lexicographically to ensure consistent order
+        String first = sender.compareTo(receiver) <= 0 ? sender : receiver;
+        String second = sender.compareTo(receiver) <= 0 ? receiver : sender;
+
+        return first + "_" + second + "_" + sentAt;
     }
 
 

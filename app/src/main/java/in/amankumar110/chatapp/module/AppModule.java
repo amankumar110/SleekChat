@@ -16,11 +16,13 @@ import in.amankumar110.chatapp.data.remote.ChatSessionService;
 import in.amankumar110.chatapp.data.remote.MessageService;
 import in.amankumar110.chatapp.data.remote.PhoneAuthService;
 import in.amankumar110.chatapp.data.remote.RealtimeMessageService;
+import in.amankumar110.chatapp.data.remote.RealtimeMessageUpdateService;
 import in.amankumar110.chatapp.data.remote.RealtimeStatusService;
 import in.amankumar110.chatapp.data.remote.UserService;
 import in.amankumar110.chatapp.data.repository.ChatSessionRepositoryImpl;
 import in.amankumar110.chatapp.data.repository.MessageRepositoryImpl;
 import in.amankumar110.chatapp.data.repository.RealtimeMessageRepositoryImpl;
+import in.amankumar110.chatapp.data.repository.RealtimeMessageUpdateRepositoryImpl;
 import in.amankumar110.chatapp.data.repository.RealtimeStatusRepositoryImpl;
 import in.amankumar110.chatapp.data.repository.RemoteTokenRepositoryImpl;
 import in.amankumar110.chatapp.data.repository.PhoneAuthRepositoryImpl;
@@ -30,6 +32,7 @@ import in.amankumar110.chatapp.domain.repository.ChatSessionRepository;
 import in.amankumar110.chatapp.domain.repository.MessageRepository;
 import in.amankumar110.chatapp.domain.repository.PhoneAuthRepository;
 import in.amankumar110.chatapp.domain.repository.RealtimeMessageRepository;
+import in.amankumar110.chatapp.domain.repository.RealtimeMessageUpdateRepository;
 import in.amankumar110.chatapp.domain.repository.RealtimeStatusRepository;
 import in.amankumar110.chatapp.domain.repository.RemoteTokenRepository;
 import in.amankumar110.chatapp.domain.repository.TokenStorageRepository;
@@ -94,5 +97,11 @@ public class AppModule {
     @Singleton
     public static RealtimeStatusRepository provideRealtimeStatusRepository(RealtimeStatusService realtimeStatusService) {
         return new RealtimeStatusRepositoryImpl(realtimeStatusService);
+    }
+
+    @Provides
+    @Singleton
+    public static RealtimeMessageUpdateRepository provideRealtimeMessageUpdateRepository(RealtimeMessageUpdateService realtimeMessageUpdateService) {
+        return new RealtimeMessageUpdateRepositoryImpl(realtimeMessageUpdateService);
     }
 }

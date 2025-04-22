@@ -110,6 +110,17 @@ public class UserRepositoryImpl implements UserRepository {
         });
     }
 
+    @Override
+    public void saveMessagingToken(String uId, String token, UserListener<Void> userListener) {
 
+        userService.saveMessagingToken(uId, token, task -> {
+            if (task.isSuccessful())
+                userListener.onSuccess(null);
+            else {
+                Log.e("ChatApp12", task.getException().getLocalizedMessage());
+                userListener.onError(task.getException());
+            }
+        });
+    }
 }
 

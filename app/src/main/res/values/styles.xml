@@ -35,17 +35,19 @@
 
     <style name="iconButton" parent="Widget.Material3.Button.IconButton.Filled">
         <!-- Use backgroundTint to set the background color -->
-        <item name="backgroundTint">?android:colorBackground</item>
+        <item name="backgroundTint">?android:colorPrimary</item>
 
         <!-- iconTint is used for setting the icon color -->
-        <item name="iconTint">?attr/colorSurface</item>
+        <item name="iconTint">@color/white</item>
 
         <!-- Optional: text color, if it's a button with text -->
         <item name="android:textColor">?android:colorPrimary</item>
 
         <!-- Set the icon size -->
-        <item name="iconSize">36dp</item>
+        <item name="iconSize">30dp</item>
 
     </style>
+
+
 
 </resources>

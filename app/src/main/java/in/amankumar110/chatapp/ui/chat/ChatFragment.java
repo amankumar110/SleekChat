@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,20 +37,22 @@ import in.amankumar110.chatapp.utils.UiHelper;
 import in.amankumar110.chatapp.utils.ui.ChatFragmentViewUtil;
 import in.amankumar110.chatapp.viewmodels.chat.ChatSessionViewModel;
 import in.amankumar110.chatapp.viewmodels.message.MessageViewModel;
+import in.amankumar110.chatapp.viewmodels.messageupdate.MessageUpdateViewModel;
 import in.amankumar110.chatapp.viewmodels.realtimemessage.RealtimeMessageViewModel;
 import in.amankumar110.chatapp.viewmodels.user.RealtimeStatusViewModel;
-
 
 @AndroidEntryPoint
 public class ChatFragment extends Fragment {
 
     public static final String ARG_CHAT_SESSION = "chat_session";
     private static final String ARG_RECYCLERVIEW_STATE = "recyclerview_state";
+    private static final String ARG_MESSAGES_JSON = "messages";
     private MessagesAdapter messagesAdapter;
-    private final List<Message> messages = new ArrayList<>();
+    private List<Message> messages = new ArrayList<>();
     private ChatSessionViewModel chatSessionViewModel;
     private RealtimeMessageViewModel realtimeMessageViewModel;
     private RealtimeStatusViewModel realtimeStatusViewModel;
+    private MessageUpdateViewModel messageUpdateViewModel;
     private FragmentChatBinding binding;
     private ChatSession chatSession;
     private NavController navController;
@@ -85,6 +88,7 @@ public class ChatFragment extends Fragment {
         realtimeStatusViewModel = new ViewModelProvider(requireActivity()).get(RealtimeStatusViewModel.class);
         realtimeMessageViewModel = new ViewModelProvider(requireActivity()).get(RealtimeMessageViewModel.class);
         chatSessionViewModel = new ViewModelProvider(requireActivity()).get(ChatSessionViewModel.class);
+        messageUpdateViewModel = new ViewModelProvider(this).get(MessageUpdateViewModel.class);
     }
 
     @Override
@@ -102,11 +106,14 @@ public class ChatFragment extends Fragment {
 
         realtimeMessageViewModel.observeNewMessage(chatSession.getSessionId());
         realtimeStatusViewModel.getUserStatus(chatSession.getReceiverUid());
+        messageUpdateViewModel.onNewDeletedMessage(chatSession.getSessionId());
+        messageUpdateViewModel.onNewUpdatedMessage(chatSession.getSessionId());
     }
 
     private void showInChat() {
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         UserStatus userStatus = new UserStatus(UserStatus.Status.IN_CHAT, System.currentTimeMillis());
+        userStatus.setSessionId(chatSession.getSessionId());
         realtimeStatusViewModel.setUserStatus(uid, userStatus);
     }
 
@@ -141,32 +148,40 @@ public class ChatFragment extends Fragment {
         observeReceiverOnlineStatus();
         observeMessagesMarkedAsSeen();
         observeMessageUpdate();
+        observeMessageDelete();
     }
 
     private void observeMessageUpdate() {
 
-        realtimeMessageViewModel.isMessageUpdated.observe(getViewLifecycleOwner(), isUpdated -> {
+        messageUpdateViewModel.newUpdatedMessage.observe(getViewLifecycleOwner(),updatedMessage -> {
 
-            if(isUpdated==null)
+
+
+            if(!messageUpdateViewModel.isIdle() || updatedMessage==null)
                 return;
 
-            if(isUpdated) {
-                List<Message> messageList = new ArrayList<>();
+            Log.v("ChatFragment","A Message was Updated");
 
-                List<Message> messages = realtimeMessageViewModel.messages.getValue();
-                messageList.addAll(messages);
+            messagesAdapter.reflectUpdateMessage(updatedMessage);
+            messages.set(messages.indexOf(updatedMessage),updatedMessage);
 
-                List<Message> liveMessages = realtimeMessageViewModel.getLiveMessagesIfAvailable();
-                if (liveMessages != null)
-                    messageList.addAll(liveMessages);
-
-                Log.v("ChatFragment","dbmessages : \n"+messages.toString());
-                Log.v("ChatFragment","liveMEssages : \n"+liveMessages);
-
-                showMessages(messageList);  // Update RecyclerView
-            }
+            messageUpdateViewModel.resetUpdatedMessage();
         });
+    }
 
+    private void observeMessageDelete() {
+
+        messageUpdateViewModel.newDeletedMessage.observe(getViewLifecycleOwner(),deletedMessage -> {
+
+            if(!messageUpdateViewModel.isIdle() || deletedMessage==null)
+                return;
+
+            Log.v("ChatFragment","A Message was Deleted");
+            messagesAdapter.reflectDeletedMessage(deletedMessage);
+            messages.remove(deletedMessage);
+
+            messageUpdateViewModel.resetDeletedMessage();
+        });
     }
 
     private void observeReceiverOnlineStatus() {
@@ -181,14 +196,14 @@ public class ChatFragment extends Fragment {
             Log.v("isOffline", ChatFragmentViewUtil.isOffline(userStatus.getStatus()) + "");
 
 
-            if (ChatFragmentViewUtil.isInChat(userStatus.getStatus()))
+            if (ChatFragmentViewUtil.isInChat(userStatus.getStatus())) {
                 messagesAdapter.markMessagesAsSeen();
-
-            showOnlineStatus(userStatus);
+            }
+            showUserStatus(userStatus);
         });
     }
 
-    private void showOnlineStatus(UserStatus userStatus) {
+    private void showUserStatus(UserStatus userStatus) {
 
         if (ChatFragmentViewUtil.isOnline(userStatus.getStatus())) {
 
@@ -209,10 +224,7 @@ public class ChatFragment extends Fragment {
 
         realtimeMessageViewModel.newMessage.observe(getViewLifecycleOwner(), message -> {
 
-            if (!realtimeMessageViewModel.isIdle())
-                return;
-
-            if (message == null)
+            if (!realtimeMessageViewModel.isIdle() || message == null)
                 return;
 
             if (!messagesAdapter.contains(message)) {
@@ -223,12 +235,14 @@ public class ChatFragment extends Fragment {
                                 realtimeStatusViewModel.userStatus.getValue().getStatus())
                 ) {
                     realtimeMessageViewModel.markLiveMessageAsSeen(message);
-                    message.setSeen(true);
+                    message.setIsSeen(true);
                 }
                 messagesAdapter.addMessage(message);
                 messages.add(message);
             }
         });
+
+        realtimeMessageViewModel.resetNewMessage();
     }
 
     private void observeMessagesLoaded() {
@@ -241,15 +255,13 @@ public class ChatFragment extends Fragment {
             messages.clear();  // Clear old data (if necessary)
             messages.addAll(messageList); // Add the new data
 
-            Log.v("DBMESSAGE",messageList.toString());
-
             // Append live message if any live session is going on
             List<Message> liveMessages = realtimeMessageViewModel.getLiveMessagesIfAvailable();
+
             if(liveMessages!=null)
                 messages.addAll(liveMessages);
-            Log.v("ALLMESSAGES",messageList.toString());
-            showMessages(messages);  // Update RecyclerView
 
+            showMessages(messages);  // Update RecyclerView
             // Mark Unseen Messages as Seen of the other sender
             realtimeMessageViewModel.markSenderMessagesAsSeenIfRequired(chatSession);
         });
@@ -259,25 +271,23 @@ public class ChatFragment extends Fragment {
 
         realtimeMessageViewModel.messagesMarkedAsRead.observe(getViewLifecycleOwner(), isMarked -> {
 
-            if (!realtimeMessageViewModel.isIdle())
+            if (!realtimeMessageViewModel.isIdle() || isMarked==null)
                 return;
 
             if (Boolean.TRUE.equals(isMarked)) {
                 messagesAdapter.markMessagesAsSeen();
             }
 
+            realtimeMessageViewModel.resetMessagesMarkedAsRead();
         });
     }
 
     private void initializeRecyclerView() {
-
         binding.rvMessages.setLayoutManager(new LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false));
         binding.rvMessages.setAdapter(messagesAdapter);
     }
 
     private void showMessages(List<Message> messageList) {
-
-        Log.v(getClass().getName(), "Messages: " + messageList.size());
         messagesAdapter.setMessageList(messageList);  // Pass the updated list
         ChatFragmentViewUtil.restoreScrollIfPossible(recyclerViewState, binding);
     }
@@ -300,7 +310,7 @@ public class ChatFragment extends Fragment {
 
             ChatFragmentViewUtil.clearMessageField(requireContext(), binding);
 
-            if (!realtimeMessageViewModel.isIdle())
+            if (!realtimeMessageViewModel.isIdle() || isSent==null)
                 return;
 
             if (isSent) {
@@ -312,6 +322,8 @@ public class ChatFragment extends Fragment {
                 String errorMessage = realtimeMessageViewModel.errorMessage.getValue();
                 UiHelper.showMessage(requireContext(), errorMessage);
             }
+
+            realtimeMessageViewModel.resetMessageSent();
         });
     }
 
@@ -320,8 +332,11 @@ public class ChatFragment extends Fragment {
         super.onSaveInstanceState(outState);
         // Save RecyclerView scroll state
         String chatSessionJson = new Gson().toJson(chatSession);
-        outState.putString(ARG_CHAT_SESSION, chatSessionJson);
+        String messagesJson = new Gson().toJson(messages);
         recyclerViewState = binding.rvMessages.getLayoutManager().onSaveInstanceState();
+
+        outState.putString(ARG_CHAT_SESSION, chatSessionJson);
+        outState.putString(ARG_MESSAGES_JSON,messagesJson);
         outState.putParcelable(ARG_RECYCLERVIEW_STATE, recyclerViewState);
     }
 
@@ -333,15 +348,26 @@ public class ChatFragment extends Fragment {
             recyclerViewState = savedInstanceState.getParcelable(ARG_RECYCLERVIEW_STATE);
             String chatSessionJson = savedInstanceState.getString(ARG_CHAT_SESSION);
             this.chatSession = new Gson().fromJson(chatSessionJson, ChatSession.class);
+            String messagesJson = savedInstanceState.getString(ARG_MESSAGES_JSON);
+            this.messages = new Gson().fromJson(messagesJson, new TypeToken<List<Message>>() {}.getType());
         }
+    }
+
+    private void syncMessages() {
+        List<Message> updateMessages = messageUpdateViewModel.getUpdatedMessages();
+        List<Message> deleteMessages = messageUpdateViewModel.getDeletedMessages();
+        List<Message> syncMessages = realtimeMessageViewModel.getLiveMessagesIfAvailable();
+        realtimeMessageViewModel.syncMessages(syncMessages,updateMessages,deleteMessages,chatSession.getSessionId());
     }
 
     @Override
     public void onPause() {
         super.onPause();
         showOnline();
-        realtimeMessageViewModel.syncMessages(chatSession.getSessionId());
-        chatSessionViewModel.updateLastMessage(chatSession, messages.get(messages.size() - 1).getMessage());
+        syncMessages();
+        if (!messages.isEmpty()) {
+            chatSessionViewModel.updateLastMessage(chatSession, messages.get(messages.size() - 1).getMessage());
+        }
     }
 
     private void showOnline() {
@@ -355,4 +381,5 @@ public class ChatFragment extends Fragment {
         super.onDestroy();
         binding = null;
     }
+
 }

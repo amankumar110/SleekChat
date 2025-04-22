@@ -1,5 +1,7 @@
 package in.amankumar110.chatapp.models.chat;
 
+import androidx.annotation.Nullable;
+
 public class Message {
 
     private String senderUId, receiverUId, message, id;
@@ -70,11 +72,19 @@ public class Message {
                 '}';
     }
 
-    public boolean isSeen() {
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Message message = (Message) o;
+        return id.equals(message.id);  // assuming `id` is non-null
+    }
+
+    public boolean getIsSeen() {
         return isSeen;
     }
 
-    public void setSeen(boolean seen) {
+    public void setIsSeen(boolean seen) {
         isSeen = seen;
     }
 }

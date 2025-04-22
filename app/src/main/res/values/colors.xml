@@ -3,21 +3,21 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="green">#66BB6A </color>
-    <color name="colorHint">#666161</color>
     <color name="grey">#B3BAB4</color>
 
     //  Theme colors
-    <color name="colorPrimaryLight">@color/green</color>
-    <color name="colorPrimaryDark">@color/green</color>
-    <color name="colorBackgroundLight">#faf9f9</color>
-    <color name="colorBackgroundDark">#495867</color>
-    <color name="colorTextLight">@color/black</color>
-    <color name="colorTextDark">@color/white</color>
-    <color name="colorSurfaceVariantLight">#F1EFEF</color>
-    <color name="colorSurfaceVariantDark">#37424D</color>
-    <color name="colorSurfaceLight">#666161</color>
-    <color name="colorSurfaceDark">#B3BAB4</color>
-    <color name="colorHintLight">#666161</color>
-    <color name="colorHintDark">#B3BAB4</color>
+    <color name="colorPrimary">@color/green</color>
+
+    <color name="colorBackground">#faf9f9</color>
+
+    <color name="colorText">@color/black</color>
+
+    <color name="colorSurfaceVariant">#F1EFEF</color>
+
+    <color name="colorSurface">#666161</color>
+
+    <color name="colorHint">#666161</color>
+
+    <color name="fillColor">#000000</color>
 
 </resources>

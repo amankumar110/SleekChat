@@ -58,4 +58,12 @@ public class UserService {
         database.collection(COLLECTION_ID).document(uId).update(updates).addOnCompleteListener(onCompleteListener);
     }
 
+    public void saveMessagingToken(String uId, String token, OnCompleteListener<Void> onCompleteListener) {
+        // Corrected method to update messagingToken
+        database.collection(COLLECTION_ID)
+                .document(uId)
+                .update("messagingToken", token)  // Use update to set the messagingToken field
+                .addOnCompleteListener(onCompleteListener);
+    }
+
 }

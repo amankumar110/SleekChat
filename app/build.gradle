@@ -45,6 +45,7 @@ dependencies {
     implementation libs.firebase.auth
     implementation libs.runner
     implementation libs.work.runtime
+    implementation libs.firebase.messaging
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
@@ -56,6 +57,9 @@ dependencies {
     def nav_version = "2.8.9"
     implementation "androidx.navigation:navigation-fragment:$nav_version"
     implementation "androidx.navigation:navigation-ui:$nav_version"
+
+    //KSerialization
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3"
 
     // Circle Indicators
     implementation("com.tbuonomo:dotsindicator:5.1.0")
@@ -92,4 +96,6 @@ dependencies {
 
     // Lifecycle
     implementation "androidx.lifecycle:lifecycle-process:2.6.2"
+
+    implementation 'androidx.core:core-splashscreen:1.0.0-beta02'
 }

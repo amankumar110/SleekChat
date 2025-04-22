@@ -5,8 +5,9 @@ public class User {
     private String phoneNumber;
     private long lastSeen;
     private boolean isOnline;
+    private String messagingToken;
 
-    public User() {};
+    public User() {}
 
     public User(String uid, String phoneNumber, long lastSeen, boolean isOnline) {
         this.uid = uid;
@@ -49,5 +50,13 @@ public class User {
 
     public void setIsOnline(boolean online) {
         isOnline = online;
+    }
+
+    public String getMessagingToken() {
+        return messagingToken;
+    }
+
+    public void setMessagingToken(String messagingToken) {
+        this.messagingToken = messagingToken;
     }
 }

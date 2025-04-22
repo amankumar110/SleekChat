@@ -2,11 +2,12 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.ChatApp" parent="Theme.Material3.DayNight.NoActionBar">
 
-        <item name="colorPrimary">@color/colorPrimaryDark</item>
-        <item name="android:colorBackground">@color/colorBackgroundDark</item>
-        <item name="android:textColor">@color/colorTextDark</item>
-        <item name="android:textColorHint">@color/colorHintDark</item>
-        <item name="colorSurfaceVariant">@color/colorSurfaceVariantDark</item>
-        <item name="colorSurface">@color/colorSurfaceDark</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="android:colorBackground">@color/colorBackground</item>
+        <item name="android:textColor">@color/colorText</item>
+        <item name="android:textColorHint">@color/colorHint</item>
+        <item name="colorSurfaceVariant">@color/colorSurfaceVariant</item>
+        <item name="colorSurface">@color/colorSurface</item>
+        <item name="android:windowBackground">@color/colorBackground</item>
     </style>
 </resources>

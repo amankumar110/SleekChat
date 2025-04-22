@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">@color/green</color>
+    <color name="colorBackground">#495867</color>
+    <color name="colorText">@color/white</color>
+    <color name="colorSurfaceVariant">#37424D</color>
+    <color name="colorSurface">#B3BAB4</color>
+    <color name="colorHint">#B3BAB4</color>
+    <color name="fillColor">#FFFFFF</color>
+</resources>

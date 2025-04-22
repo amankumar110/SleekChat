@@ -16,10 +16,12 @@ public class UserStatus {
         public String getName() {
             return name;
         }
+
     }
 
     private String status;
     private long lastSeen;
+    private String sessionId;
 
     public UserStatus(Status status, long lastSeen) {
         this.status = status.getName();
@@ -43,5 +45,13 @@ public class UserStatus {
 
     public void setLastSeen(long lastSeen) {
         this.lastSeen = lastSeen;
+    }
+
+    public String getSessionId() {
+        return sessionId;
+    }
+
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
     }
 }

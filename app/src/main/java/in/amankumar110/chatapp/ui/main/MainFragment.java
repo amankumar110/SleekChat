@@ -1,6 +1,11 @@
 package in.amankumar110.chatapp.ui.main;
 
+import android.Manifest;
 import android.os.Bundle;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContract;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -11,6 +16,8 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
+
 import in.amankumar110.chatapp.R;
 import in.amankumar110.chatapp.databinding.FragmentMainBinding;
 import in.amankumar110.chatapp.ui.main.fragments.ChatSessionsFragment;
@@ -18,6 +25,7 @@ import in.amankumar110.chatapp.ui.main.fragments.SearchUserFragment;
 import in.amankumar110.chatapp.utils.AnimationUtil;
 import in.amankumar110.chatapp.utils.CountryCodeUtil;
 import in.amankumar110.chatapp.utils.UiHelper;
+import in.amankumar110.chatapp.utils.notifications.AppNotificationManager;
 
 public class MainFragment extends Fragment {
 
@@ -28,11 +36,34 @@ public class MainFragment extends Fragment {
     private static final int MIN_PHONE_LENGTH = 12;
     private static final int DEBOUNCE_DELAY = 300;
     private Runnable searchRunnable;
-    private Handler searchHandler = new Handler();
+    private AppNotificationManager appNotificationManager;
+    private final Handler searchHandler = new Handler();
+
+
+    private ActivityResultLauncher<String> permissionLauncher;
 
     public MainFragment() {
         // Required empty constructor
     }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        permissionLauncher = registerForActivityResult(
+                new ActivityResultContracts.RequestPermission(),
+                isGranted -> {
+                    if (isGranted) {
+                        appNotificationManager.showNotification(1, "Notification", "Permission Granted");
+                    } else if (shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {
+                        Toast.makeText(requireContext(), "Notifications are Important", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(requireContext(), "Notifications Disabled", Toast.LENGTH_SHORT).show();
+                    }
+                }
+        );
+    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -43,6 +74,8 @@ public class MainFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+
+        appNotificationManager = new AppNotificationManager(requireContext());
 
         searchUserFragment = SearchUserFragment.newInstance();
         chatSessionsFragment = ChatSessionsFragment.newInstance();
@@ -82,6 +115,12 @@ public class MainFragment extends Fragment {
 
             }
         });
+
+        requestNotificationPermissionIfRequired();
+    }
+
+    private void requestNotificationPermissionIfRequired() {
+        appNotificationManager.requestNotificationPermissionIfRequired(permissionLauncher);
     }
 
     private void searchUser(String phoneNumber) {
@@ -129,4 +168,10 @@ public class MainFragment extends Fragment {
             searchUser(phoneNumber);
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        binding = null;
+        searchHandler.removeCallbacksAndMessages(null);
+    }
 }

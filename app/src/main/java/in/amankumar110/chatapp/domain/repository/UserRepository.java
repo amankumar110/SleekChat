@@ -12,6 +12,7 @@ public interface UserRepository {
     void getUser(String UId, UserListener<User> userListener);
     void updateUser(String uId, Map<String,Object> updates, UserListener<Void> userListener);
     void getUserByPhoneNumber(String phoneNumber, UserListener<User> userListener);
+    void saveMessagingToken(String uId, String token, UserListener<Void> userListener);
 
     interface UserListener<T> {
         void onSuccess(T user);

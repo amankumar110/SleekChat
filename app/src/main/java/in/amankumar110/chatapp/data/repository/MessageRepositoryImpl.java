@@ -102,5 +102,28 @@ public class MessageRepositoryImpl implements MessageRepository {
         });
     }
 
+    @Override
+    public void deleteMessages(List<Message> messages, String sessionId, MessageListener<Void> listener) {
+
+        messageService.deleteMessages(messages, sessionId, task -> {
+
+            if(task.isSuccessful())
+                listener.onSuccess(null);
+            else
+                handleError(listener, "Messages Couldn't be Deleted");
+        });
+    }
+
+    @Override
+    public void updateMessages(List<Message> messages, String sessionId, MessageListener<Void> listener) {
+
+        messageService.updateMessages(messages,sessionId,task -> {
+
+            if(task.isSuccessful())
+                listener.onSuccess(null);
+            else
+                handleError(listener, "Messages Couldn't be Updated");
+        });
+    }
 
 }

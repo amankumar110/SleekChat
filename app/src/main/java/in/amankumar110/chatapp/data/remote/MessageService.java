@@ -38,8 +38,7 @@ public class MessageService {
 
     // Bulk adding messages using WriteBatch for atomic operations
     public void addMessages(List<Message> messages, String sessionId, OnCompleteListener<Void> onCompleteListener) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        WriteBatch batch = db.batch();  // Create a batch operation
+        WriteBatch batch = firestore.batch();  // Create a batch operation
 
         // Loop through all messages and prepare them for batch operation
         for (Message message : messages) {
@@ -50,13 +49,13 @@ public class MessageService {
             messageData.put("receiverUId", message.getReceiverUId());
             messageData.put("message", message.getMessage()); // Assuming Message has a getMessageContent() method
             messageData.put("sentAt", message.getSentAt());  // You can add a timestamp field
-            messageData.put("isSeen", message.isSeen());
+            messageData.put("isSeen", message.getIsSeen());
 
             // If the Message class has other fields, include them as needed
             // messageData.put("sender", message.getSender());
 
             // Create a new document reference in the "messages" collection for each message
-            DocumentReference newMessageRef = db.collection(COLLECTION_ID)
+            DocumentReference newMessageRef = firestore.collection(COLLECTION_ID)
                     .document(sessionId)  // Use sessionId for the document reference
                     .collection(MESSAGES_COLLECTION_ID)
                     .document(message.getId());  // Firestore auto-generates the document ID
@@ -79,7 +78,6 @@ public class MessageService {
     }
 
     public void getAllMessages(String sessionId,OnCompleteListener<QuerySnapshot> onCompleteListener) {
-
         firestore.collection(COLLECTION_ID)
                 .document(sessionId)
                 .collection(MESSAGES_COLLECTION_ID)
@@ -111,5 +109,37 @@ public class MessageService {
                 .document(message.getId())
                 .update("message",message.getMessage())
                 .addOnCompleteListener(onCompleteListener);
+    }
+
+    public void deleteMessages(List<Message> messages, String sessionId, OnCompleteListener<Void> onCompleteListener) {
+
+        WriteBatch batch = firestore.batch();
+
+        for (Message message : messages) {
+            DocumentReference docRef = firestore.collection(COLLECTION_ID)
+                    .document(sessionId)
+                    .collection(MESSAGES_COLLECTION_ID)
+                    .document(message.getId());
+
+            batch.delete(docRef);
+        }
+
+        batch.commit().addOnCompleteListener(onCompleteListener);
+    }
+
+    public void updateMessages(List<Message> messages, String sessionId, OnCompleteListener<Void> onCompleteListener) {
+
+        WriteBatch batch = firestore.batch();
+
+        for (Message message : messages) {
+            DocumentReference docRef = firestore.collection(COLLECTION_ID)
+                    .document(sessionId)
+                    .collection(MESSAGES_COLLECTION_ID)
+                    .document(message.getId());
+
+            batch.update(docRef,"message",message.getMessage());
+        }
+
+        batch.commit().addOnCompleteListener(onCompleteListener);
     }
 }

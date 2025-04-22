@@ -37,4 +37,8 @@
     <string name="in_chat_status">Live</string>
     <string name="message_updated">Message Updated Successfully</string>
     <string name="message_update_failed">Message Failed to Update</string>
+    <string name="message_deleted">Message Deleted Successfully</string>
+    <string name="message_delete_failed">Message Couldn\'t be Deleted</string>
+    <string name="default_notification_channel_id">messaging_id</string>
+    <string name="messaging_notification_heading">Someone Sent You a Message</string>
 </resources>

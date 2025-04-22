@@ -10,7 +10,7 @@
         app:tint="?attr/colorSurface"
         android:layout_marginVertical="10dp"
         android:layout_width="20dp"
-        android:src="@drawable/ic_seen"
+        android:src="@drawable/ic_receiver_online"
         android:layout_height="20dp"
         android:id="@+id/iv_user_status"/>
 

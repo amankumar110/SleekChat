@@ -1,8 +1,6 @@
 package in.amankumar110.chatapp.ui.chat.adapters;
 
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -19,7 +17,6 @@ import in.amankumar110.chatapp.databinding.MessageLeftItemLayoutBinding;
 import in.amankumar110.chatapp.databinding.MessageRightItemLayoutBinding;
 import in.amankumar110.chatapp.databinding.NoMessagesItemLayoutBinding;
 import in.amankumar110.chatapp.models.chat.Message;
-import in.amankumar110.chatapp.ui.chat.ChatFragment;
 import in.amankumar110.chatapp.ui.chat.fragments.MessageEditDialogFragment;
 import in.amankumar110.chatapp.utils.DateHelper;
 
@@ -136,8 +133,32 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     public void markMessagesAsSeen() {
         messageList.stream().filter(this::isMessageSent) // Filtered Messages
-                .forEach(message -> message.setSeen(true));
+                .forEach(message -> message.setIsSeen(true));
         notifyDataSetChanged();
+    }
+
+    public void reflectUpdateMessage(Message updatedMessage) {
+
+        for (int i = 0; i < messageList.size(); i++) {
+            Message message = messageList.get(i);
+            if (message.getId().equals(updatedMessage.getId())) {
+                message.setMessage(updatedMessage.getMessage());
+                notifyItemChanged(i);
+                break; // No need to continue looping
+            }
+        }
+    }
+
+    public void reflectDeletedMessage(Message updatedMessage) {
+
+        for (int i = 0; i < messageList.size(); i++) {
+            Message message = messageList.get(i);
+            if (message.getId().equals(updatedMessage.getId())) {
+                messageList.remove(i);
+                notifyItemRemoved(i);
+                break; // No need to continue looping
+            }
+        }
     }
 
     public static class MessageLeftViewHolder extends RecyclerView.ViewHolder {
@@ -167,9 +188,8 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             binding.vMessageItemLayout.tvMessage.setText(message.getMessage());
             binding.vMessageItemLayout.tvMessageTime.setText(formattedTime);
 
-            Log.v("AdapterMessage", String.valueOf(message));
-            if(message.isSeen())
-                binding.ivUserStatus.setImageResource(R.drawable.ic_seen);
+            if(message.getIsSeen())
+                binding.ivUserStatus.setImageResource(R.drawable.ic_receiver_online);
             else
                 binding.ivUserStatus.setImageResource(R.drawable.ic_sent);
 

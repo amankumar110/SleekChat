@@ -1,7 +1,5 @@
 package in.amankumar110.chatapp.viewmodels.realtimemessage;
 
-import static java.lang.Boolean.TRUE;
-
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
@@ -12,7 +10,6 @@ import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -20,11 +17,11 @@ import javax.inject.Inject;
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import in.amankumar110.chatapp.domain.repository.MessageRepository;
 import in.amankumar110.chatapp.domain.repository.RealtimeMessageRepository;
-import in.amankumar110.chatapp.domain.usecases.message.GenerateMessageIdUseCase;
-import in.amankumar110.chatapp.domain.usecases.message.GetMessagesUseCase;
-import in.amankumar110.chatapp.domain.usecases.message.MarkMessageAsSeenUseCase;
-import in.amankumar110.chatapp.domain.usecases.message.SyncMessagesUseCaseWrapper;
-import in.amankumar110.chatapp.domain.usecases.message.UpdateMessageUseCase;
+import in.amankumar110.chatapp.domain.usecases.message.messages.GenerateMessageIdUseCase;
+import in.amankumar110.chatapp.domain.usecases.message.messages.GetMessagesUseCase;
+import in.amankumar110.chatapp.domain.usecases.message.messageseen.MarkMessageAsSeenUseCase;
+import in.amankumar110.chatapp.domain.usecases.message.realtimesync.SyncMessagesUseCaseWrapper;
+import in.amankumar110.chatapp.domain.usecases.message.messages.UpdateMessageUseCase;
 import in.amankumar110.chatapp.domain.usecases.realtimemessaging.GetRealtimeMessageUseCase;
 import in.amankumar110.chatapp.domain.usecases.realtimemessaging.SendMessageUseCase;
 import in.amankumar110.chatapp.models.chat.ChatSession;
@@ -145,12 +142,15 @@ public class RealtimeMessageViewModel extends ViewModel {
         return generateMessageIdUseCase.execute(senderId,receiverId);
     }
 
-    public void syncMessages(String sessionId) {
+    public void syncMessages(List<Message> realtimeMessages,
+                             List<Message> updateMessages,
+                             List<Message> deleteMessages,
+                             String sessionId) {
 
-        if(isIdle())
-            Log.v("syncing",unsyncedMessages.toString());
-        syncMessagesUseCaseWrapper.syncInBackground(unsyncedMessages,sessionId);
+        syncMessagesUseCaseWrapper.syncInBackground(realtimeMessages,updateMessages,deleteMessages,sessionId);
         unsyncedMessages.clear();
+        updateMessages.clear();
+        deleteMessages.clear();
     }
 
     public void markSenderMessagesAsSeenIfRequired(ChatSession chatSession) {
@@ -158,7 +158,7 @@ public class RealtimeMessageViewModel extends ViewModel {
         _isLoading.postValue(true);
 
         List<Message> filteredMessages = _messages.getValue().stream()
-                .filter(message -> isNotSentByMe(message) && !message.isSeen())
+                .filter(message -> isNotSentByMe(message) && !message.getIsSeen())
                 .collect(Collectors.toList());
 
         if(filteredMessages.isEmpty()) {
@@ -185,46 +185,6 @@ public class RealtimeMessageViewModel extends ViewModel {
         });
     }
 
-    public void updateMessage(Message message, String sessionId) {
-
-        _isLoading.postValue(true);
-
-        Log.v("unsyncedMessage",message.toString());
-        Log.v("unsyncedMessages",unsyncedMessages.toString());
-
-
-        for (Message m : unsyncedMessages) {
-            if (m.getId().equals(message.getId())) {
-                m.setMessage(message.getMessage());
-                _isLoading.postValue(false);
-                _isMessageUpdated.postValue(true);
-                Log.v("LocalUpdate","Message was Updated Locally");
-                Log.v("updatedUnsyncMessages",unsyncedMessages.toString());
-                return; // Message found and updated locally, no need to update remotely
-            }
-        }
-
-        Log.v("isUpdatedNotFound","Heading to Remote");
-
-        // If not found locally, update remotely
-        updateMessageUseCase.execute(message, sessionId, new MessageRepository.MessageListener<Void>() {
-            @Override
-            public void onSuccess(Void result) {
-                _isLoading.postValue(false);
-                updateMessageInLiveData(message);
-                _isMessageUpdated.postValue(true);
-            }
-
-            @Override
-            public void onError(Exception exception) {
-                _isLoading.postValue(false);
-                _isMessageUpdated.postValue(false);
-                _errorMessage.postValue(exception.getMessage());
-
-            }
-        });
-    }
-
     public boolean isNotSentByMe(Message message) {
         String uid  = FirebaseAuth.getInstance().getCurrentUser().getUid();
         return !message.getSenderUId().equals(uid);
@@ -245,24 +205,18 @@ public class RealtimeMessageViewModel extends ViewModel {
     public void markLiveMessageAsSeen(Message message) {
         _messages.getValue().stream()
                 .filter(message::equals)
-                .forEach(message2 -> message2.setSeen(true));
+                .forEach(message2 -> message2.setIsSeen(true));
     }
 
-    private void updateMessageInLiveData(Message updatedMessage) {
-        List<Message> currentList = _messages.getValue();
-        if (currentList != null) {
-            List<Message> updatedList = new ArrayList<>(currentList);
-            for (int i = 0; i < updatedList.size(); i++) {
-                if (updatedList.get(i).getId().equals(updatedMessage.getId())) {
-                    updatedList.get(i).setMessage(updatedMessage.getMessage());
-                    break;
-                }
-            }
-            _messages.postValue(updatedList);
-        }
+    public void resetMessageSent() {
+        this._isMessageSent.setValue(null);
     }
 
-    public void consumeMessageUpdate() {
-        _isMessageUpdated.setValue(null);
+    public void resetNewMessage() {
+        this._newMessage.setValue(null);
+    }
+
+    public void resetMessagesMarkedAsRead() {
+        this._messagesMarkedAsRead.setValue(null);
     }
 }

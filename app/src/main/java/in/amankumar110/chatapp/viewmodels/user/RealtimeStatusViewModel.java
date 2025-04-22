@@ -41,7 +41,6 @@ public class RealtimeStatusViewModel extends ViewModel {
             @Override
             public void onSuccess(UserStatus data) {
                 Log.v("VM","successInGetUser");
-                Log.v("VM",data.toString());
                 _userStatus.postValue(data);
                 _isLoading.postValue(false);
             }

@@ -14,6 +14,8 @@ public interface MessageRepository {
     void addMessages(List<Message> messages, String sessionId, MessageListener<Void> listener);
     void markMessageAsSeen(List<Message> messages, ChatSession chatSession, MessageListener<Void> listener);
     void updateMessage(Message message, String sessionId, MessageListener<Void> listener);
+    void deleteMessages(List<Message> messages, String sessionId, MessageListener<Void> listener);
+    void updateMessages(List<Message> messages, String sessionId, MessageListener<Void> listener);
 
     interface MessageListener<T> {
 
