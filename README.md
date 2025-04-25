@@ -2,6 +2,7 @@
 
 Welcome to SleekChat, My most technically advanced and farwell java based android application. This app isn't just an ordinary app, it reflects my coding philosophy and experience in this field. from wanting to keep the code neaty and structured and symmetric across layers to following a declarative and modular coding approach with OOP. Requirements are preset with contracts and fullfilled with implementations.
 
+
 ## App Features 
 
 ### User Presence Detection
@@ -60,12 +61,20 @@ The development couldn't have completed in such a short span without the assista
 9. Login with your Testing number provided earlier.
 10. Use the app.
 
+
 ## Screenshots
 
-<img src="splash.jpeg" width="400"/>
-<img src="main.jpeg" width="400"/>
-<img src="chat.jpeg" width="400"/>
-<img src="welcome2.jpeg" width="400"/>
-<img src="welcome.jpeg" width="400"/>
-<img src="main_dark.jpeg" width="400"/>
-
+<table>
+  <tr>
+    <td><img src="splash.jpeg" width="300"/></td>
+    <td><img src="main.jpeg" width="300"/></td>
+  </tr>
+  <tr>
+    <td><img src="chat.jpeg" width="300"/></td>
+    <td><img src="welcome2.jpeg" width="300"/></td>
+  </tr>
+  <tr>
+    <td><img src="welcome.jpeg" width="300"/></td>
+    <td><img src="main_dark.jpeg" width="300"/></td>
+  </tr>
+</table>
