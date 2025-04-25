@@ -41,6 +41,7 @@ The development couldn't have completed in such a short span without the assista
 
 - **Langugaes** - Java
 - **Auth** - FirebaseAuth
+- **Messaging** - Firebase Cloud Messaging
 - **Database** - Firestore
 - **Realtime Database** - Firesbase Realtime Database
 - **UI/UX** - XML, Material3
