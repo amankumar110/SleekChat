@@ -40,3 +40,19 @@ The development couldn't have completed in such a short span without the assista
 - **Database** - Firestore
 - **Realtime Database** - Firesbase Realtime Database
 - **UI/UX** - XML, Material3
+
+
+# How to Use this App?
+
+1. Clone the Repository
+2. Open in your IDE
+3. Make a Firebase Account and Project
+4. Enable Fireabase Auth, Cloud Firestore and Realtime Database
+5. Declare testing number for Firebase Auth
+6. Submit your SHA1 and SHA256 values in the project settings.
+7. Downlaod google-services.json
+8. Install the file in your project
+9. Login with your Testing number provided earlier.
+10. Use the app.
+
+
