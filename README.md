@@ -19,7 +19,7 @@ The message status is updated automatically by tracking the presence of the rece
 
 ### Push Notifications
 
-Notifications are sent and received with the message and sender's informaton to ensure ontime delivery of critical information even if the app is closed.
+Notifications are sent and received with the message and sender's informaton to ensure ontime delivery of critical information even if the app is closed. This is acheived by making use of NodeJS and Firebase service account.
 
 
 ## Development Techniques
@@ -74,5 +74,9 @@ The development couldn't have completed in such a short span without the assista
     <td><img src="welcome2.jpeg" width="300"/></td>
     <td><img src="welcome.jpeg" width="300"/></td>
     <td><img src="main_dark.jpeg" width="300"/></td>
+  </tr>
+  <tr>
+    <td><img src="signup.jped" width="300"/></td>
+    <td><img src="edit.jpeg" width="300"/></td>
   </tr>
 </table>
