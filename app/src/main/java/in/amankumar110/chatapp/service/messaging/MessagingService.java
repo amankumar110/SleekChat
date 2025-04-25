@@ -7,6 +7,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -16,6 +17,7 @@ import in.amankumar110.chatapp.R;
 import in.amankumar110.chatapp.domain.repository.UserRepository;
 import in.amankumar110.chatapp.domain.usecases.user.SaveMessagingTokenUseCase;
 import in.amankumar110.chatapp.module.MessagingServiceEntryPoint;
+import in.amankumar110.chatapp.utils.MessagingTokenHelper;
 import in.amankumar110.chatapp.utils.notifications.AppNotificationManager;
 import jakarta.inject.Inject;
 
@@ -23,19 +25,14 @@ public class MessagingService extends FirebaseMessagingService {
 
     private static final String KEY_MESSAGE_TEXT = "messageText";
     private static final String KEY_SENDER_NUMBER = "senderNumber";
-    private SaveMessagingTokenUseCase saveMessagingTokenUseCase;
 
     @Override
     public void onNewToken(@NonNull String token) {
 
         Log.v("MessagingService", "Refreshed token: " + token);
 
-        saveMessagingTokenUseCase = EntryPointAccessors.fromApplication(
-                getApplicationContext(),
-                MessagingServiceEntryPoint.class
-        ).provideSaveMessagingTokenUseCase();
-
-        storeToken(token);
+        MessagingTokenHelper messagingTokenHelper = new MessagingTokenHelper(getApplicationContext());
+        messagingTokenHelper.storeTokenIfRequired(token);
     }
 
     @Override
@@ -73,28 +70,6 @@ public class MessagingService extends FirebaseMessagingService {
         appNotificationManager.showNotification(1,title,body,pendingIntent);
     }
 
-    private void storeToken(String token) {
 
-        String uid = null;
 
-        if(FirebaseAuth.getInstance().getCurrentUser()==null)
-            return;
-        else
-            uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-
-        saveMessagingTokenUseCase.execute(uid,token, new UserRepository.UserListener<>() {
-
-            @Override
-            public void onSuccess(Void user) {
-
-                Log.v("Messaging","I Got The Work Done");
-            }
-
-            @Override
-            public void onError(Exception exception) {
-
-                Log.v("Messaging","I Couldn't Do It");
-            }
-        });
-    }
 }

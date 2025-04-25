@@ -19,7 +19,9 @@ import dagger.hilt.android.AndroidEntryPoint;
 import in.amankumar110.chatapp.R;
 import in.amankumar110.chatapp.databinding.FragmentWelcomeBinding;
 import in.amankumar110.chatapp.ui.adapters.AppFeaturesStateAdapter;
+import in.amankumar110.chatapp.ui.internet.InternetNotAvailableFragment;
 import in.amankumar110.chatapp.utils.AnimationUtil;
+import in.amankumar110.chatapp.utils.NetworkConnectionLiveData;
 import in.amankumar110.chatapp.utils.UiHelper;
 import in.amankumar110.chatapp.viewmodels.token.RemoteTokenViewModel;
 import in.amankumar110.chatapp.viewmodels.user.RealtimeStatusViewModel;
@@ -29,16 +31,16 @@ public class WelcomeFragment extends Fragment {
 
     private FragmentWelcomeBinding binding;
     private NavController navController;
+    private NetworkConnectionLiveData networkConnectionLiveData;
 
 
     public WelcomeFragment() {
 
     }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
-
     }
 
     @Override
@@ -52,13 +54,19 @@ public class WelcomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 
         navController = Navigation.findNavController(view);
+        networkConnectionLiveData = new NetworkConnectionLiveData(requireContext());
 
         binding.viewpagerFeatures.setAdapter(new AppFeaturesStateAdapter(requireActivity()));
         binding.wormDotsIndicator.attachTo(binding.viewpagerFeatures);
 
         binding.btnSignup.setOnClickListener(v -> navigateToSignupScreen());
 
-
+        networkConnectionLiveData.observe(getViewLifecycleOwner(),isConnected -> {
+            if(!isConnected) {
+                InternetNotAvailableFragment fragment = InternetNotAvailableFragment.newInstance();
+                fragment.show(getChildFragmentManager(),null);
+            }
+        });
     }
 
     private void navigateToSignupScreen() {

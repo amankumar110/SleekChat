@@ -13,6 +13,7 @@ public interface MessageRepository {
     void addMessage(Message message, String sessionId, MessageListener<Void> listener);
     void addMessages(List<Message> messages, String sessionId, MessageListener<Void> listener);
     void markMessageAsSeen(List<Message> messages, ChatSession chatSession, MessageListener<Void> listener);
+    void updateMessagesStatus(List<Message> messages, ChatSession chatSession, MessageListener<Void> listener);
     void updateMessage(Message message, String sessionId, MessageListener<Void> listener);
     void deleteMessages(List<Message> messages, String sessionId, MessageListener<Void> listener);
     void updateMessages(List<Message> messages, String sessionId, MessageListener<Void> listener);

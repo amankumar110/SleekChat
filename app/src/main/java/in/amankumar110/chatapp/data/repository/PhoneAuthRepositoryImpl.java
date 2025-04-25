@@ -3,12 +3,18 @@ package in.amankumar110.chatapp.data.repository;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 import android.view.Display;
 
+import androidx.annotation.NonNull;
+
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.PhoneAuthProvider;
+import com.google.firebase.auth.SignInMethodQueryResult;
 
 import javax.inject.Inject;
 
@@ -28,13 +34,14 @@ public class PhoneAuthRepositoryImpl implements PhoneAuthRepository {
 
     @Override
     public void sendOtp(String phoneNumber, PhoneAuthProvider.OnVerificationStateChangedCallbacks callbacks) {
-      // Sending Otp using FirebaseAuthService
-        phoneAuthService.sendVerificationCode(phoneNumber,callbacks);
+        // Sending Otp using FirebaseAuthService
+        phoneAuthService.sendVerificationCode(phoneNumber, callbacks);
     }
 
     @Override
     public void verifyOtp(String verificationId, String otp, OnCompleteListener<AuthResult> onCompleteListener) {
-        phoneAuthService.verifyOtp(verificationId, otp,onCompleteListener);
+
+        phoneAuthService.verifyOtp(verificationId, otp, onCompleteListener);
     }
 
     @Override

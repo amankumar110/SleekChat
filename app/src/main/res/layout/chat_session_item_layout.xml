@@ -12,6 +12,7 @@
 
     <com.google.android.material.card.MaterialCardView
         android:layout_margin="5dp"
+        android:elevation="10dp"
         android:id="@+id/user_container"
         android:layout_width="match_parent"
         style="@style/cardStyle"
@@ -21,7 +22,6 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:paddingHorizontal="15dp"
-
             android:paddingVertical="10dp"
             android:layout_height="match_parent">
 

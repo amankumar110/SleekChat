@@ -34,7 +34,10 @@ public class RealtimeStatusViewModel extends ViewModel {
     }
 
 
-    public void getUserStatus(String uId) {
+    public void getUserStatusIfRequired(String uId) {
+
+        if(userStatus.getValue() != null)
+            return;
 
         _isLoading.postValue(true);
         getUserStatusUseCase.execute(uId, new RealtimeStatusRepository.RealtimeStatusListener<>() {

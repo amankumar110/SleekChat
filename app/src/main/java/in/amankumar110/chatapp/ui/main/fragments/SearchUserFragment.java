@@ -5,6 +5,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,8 +15,11 @@ import android.view.ViewGroup;
 import com.google.firebase.auth.FirebaseAuth;
 import dagger.hilt.android.AndroidEntryPoint;
 import in.amankumar110.chatapp.R;
+import in.amankumar110.chatapp.data.repository.ChatSessionRepositoryImpl;
 import in.amankumar110.chatapp.databinding.FragmentSearchUserBinding;
+import in.amankumar110.chatapp.domain.repository.ChatSessionRepository;
 import in.amankumar110.chatapp.models.user.User;
+import in.amankumar110.chatapp.ui.chat.ChatFragment;
 import in.amankumar110.chatapp.utils.UiHelper;
 import in.amankumar110.chatapp.viewmodels.chat.ChatSessionViewModel;
 import in.amankumar110.chatapp.viewmodels.user.UserViewModel;
@@ -21,12 +27,14 @@ import in.amankumar110.chatapp.viewmodels.user.UserViewModel;
 @AndroidEntryPoint
 public class SearchUserFragment extends Fragment {
 
+    private NavController navController;
     private FragmentSearchUserBinding binding;
     private ChatSessionViewModel viewModel;
     private UserViewModel userViewModel;
     private boolean isSessionCreated = false;
     private User user;
     private String myPhoneNumber;
+    private String sessionId = null;
 
 
     public static SearchUserFragment newInstance() {
@@ -60,10 +68,12 @@ public class SearchUserFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 
+        this.navController = Navigation.findNavController(view);
+
         binding.userItemLayout.btnAdd.setOnClickListener(view3 -> createSession());
 
         observeUserSearch();
-        observeSessionCreation();
+        observeCreatedSession();
     }
 
     private void observeUserSearch() {
@@ -83,19 +93,23 @@ public class SearchUserFragment extends Fragment {
         });
     }
 
-    private void observeSessionCreation() {
-        viewModel.isSessionCreated.observe(getViewLifecycleOwner(), isCreated -> {
-            if (isCreated == null) return;
+    private void observeCreatedSession() {
 
-            if (isCreated) {
-                UiHelper.showMessage(requireContext(), "Session Created, talk With Other");
-                // Todo: Navigate to chat fragment once completed development
-            } else {
-                if (viewModel.errorMessage != null && viewModel.errorMessage.getValue() != null) {
-                    Log.e("error", viewModel.errorMessage.getValue());
-                }
+        viewModel.createdChatSession.observe(getViewLifecycleOwner(), createdSession -> {
+
+            if(!viewModel.isIdle())
+                return;
+
+            if(createdSession!=null) {
+                Log.v("fetchedSession",createdSession.getSessionId());
+                Bundle bundle = new Bundle();
+                bundle.putSerializable(ChatFragment.ARG_CHAT_SESSION, createdSession);
+                navController.navigate(R.id.action_mainFragment_to_chatFragment, bundle);
+            } else if(viewModel.errorMessage.getValue()!=null) {
+                UiHelper.showMessage(requireContext(),R.string.session_creation_error);
             }
-            isSessionCreated = true;
+
+            viewModel.reset();
         });
     }
 

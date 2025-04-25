@@ -20,10 +20,13 @@ import android.widget.Toast;
 
 import in.amankumar110.chatapp.R;
 import in.amankumar110.chatapp.databinding.FragmentMainBinding;
+import in.amankumar110.chatapp.ui.internet.InternetNotAvailableFragment;
 import in.amankumar110.chatapp.ui.main.fragments.ChatSessionsFragment;
 import in.amankumar110.chatapp.ui.main.fragments.SearchUserFragment;
 import in.amankumar110.chatapp.utils.AnimationUtil;
 import in.amankumar110.chatapp.utils.CountryCodeUtil;
+import in.amankumar110.chatapp.utils.MessagingTokenHelper;
+import in.amankumar110.chatapp.utils.NetworkConnectionLiveData;
 import in.amankumar110.chatapp.utils.UiHelper;
 import in.amankumar110.chatapp.utils.notifications.AppNotificationManager;
 
@@ -36,8 +39,10 @@ public class MainFragment extends Fragment {
     private static final int MIN_PHONE_LENGTH = 12;
     private static final int DEBOUNCE_DELAY = 300;
     private Runnable searchRunnable;
+    private NetworkConnectionLiveData networkConnectionLiveData;
     private AppNotificationManager appNotificationManager;
     private final Handler searchHandler = new Handler();
+    private MessagingTokenHelper messagingTokenHelper;
 
 
     private ActivityResultLauncher<String> permissionLauncher;
@@ -76,9 +81,12 @@ public class MainFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 
         appNotificationManager = new AppNotificationManager(requireContext());
-
         searchUserFragment = SearchUserFragment.newInstance();
         chatSessionsFragment = ChatSessionsFragment.newInstance();
+
+        // Get Token And Save
+        messagingTokenHelper = new MessagingTokenHelper(requireContext());
+        messagingTokenHelper.getTokenIfRequired();
 
         getChildFragmentManager().beginTransaction()
                 .replace(R.id.container_chat_sessions_fragment, chatSessionsFragment)
@@ -117,6 +125,18 @@ public class MainFragment extends Fragment {
         });
 
         requestNotificationPermissionIfRequired();
+        observeWifi();
+    }
+
+    public void observeWifi() {
+        networkConnectionLiveData = new NetworkConnectionLiveData(requireContext());
+        this.networkConnectionLiveData.observe(getViewLifecycleOwner(), isConnected -> {
+
+            if(!isConnected) {
+                InternetNotAvailableFragment fragment = InternetNotAvailableFragment.newInstance();
+                fragment.show(getChildFragmentManager(),null);
+            }
+        });
     }
 
     private void requestNotificationPermissionIfRequired() {

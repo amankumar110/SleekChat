@@ -35,6 +35,7 @@ public class UserOnlineStatusObserver implements LifecycleObserver {
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
             String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
             UserStatus userStatus = new UserStatus(UserStatus.Status.ONLINE, System.currentTimeMillis());
+            userStatus.setSessionId("");
 
             setStatusUseCase.execute(uid, userStatus, new RealtimeStatusRepository.RealtimeStatusListener<Void>() {
                 @Override
@@ -53,6 +54,7 @@ public class UserOnlineStatusObserver implements LifecycleObserver {
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
             String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
             UserStatus userStatus = new UserStatus(UserStatus.Status.OFFLINE, System.currentTimeMillis());
+            userStatus.setSessionId("");
 
             setStatusUseCase.execute(uid, userStatus, new RealtimeStatusRepository.RealtimeStatusListener<Void>() {
                 @Override

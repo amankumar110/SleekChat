@@ -91,6 +91,18 @@ public class MessageRepositoryImpl implements MessageRepository {
     }
 
     @Override
+    public void updateMessagesStatus(List<Message> messages, ChatSession chatSession, MessageListener<Void> listener) {
+
+        messageService.updateMessagesStatus(messages,chatSession,task -> {
+
+            if(task.isSuccessful())
+                listener.onSuccess(null);
+            else
+                handleError(listener, "Message Status Couldn't be Updated");
+        });
+    }
+
+    @Override
     public void updateMessage(Message message, String sessionId, MessageListener<Void> listener) {
 
         messageService.updateMessage(message, sessionId, task -> {

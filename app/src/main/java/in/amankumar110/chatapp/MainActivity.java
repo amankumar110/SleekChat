@@ -1,33 +1,26 @@
 package in.amankumar110.chatapp;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.util.TypedValue;
-import android.widget.Button;
-import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.NavGraph;
 import androidx.navigation.NavInflater;
-import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.google.firebase.auth.FirebaseAuth;
-
 import dagger.hilt.android.AndroidEntryPoint;
-import in.amankumar110.chatapp.data.remote.RealtimeStatusService;
 import in.amankumar110.chatapp.utils.UiHelper;
-import in.amankumar110.chatapp.viewmodels.user.RealtimeStatusViewModel;
 
 @AndroidEntryPoint
 public class MainActivity extends AppCompatActivity {
+
+    private NavController navController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,21 +38,33 @@ public class MainActivity extends AppCompatActivity {
 
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.nav_host_fragment);
-        NavController navController = navHostFragment.getNavController();
+        navController = navHostFragment.getNavController();
 
-        boolean isLoggedIn = getIntent().getBooleanExtra(SplashActivity.ARG_IS_LOGGED_IN, false);
+        if (savedInstanceState == null) {
+            // Only set the nav graph manually on first creation
+            boolean isLoggedIn = getIntent().getBooleanExtra(SplashActivity.ARG_IS_LOGGED_IN, false);
+            NavInflater navInflater = navController.getNavInflater();
+            NavGraph navGraph = navInflater.inflate(R.navigation.nav_graph);
 
-        NavInflater navInflater = navController.getNavInflater();
-        NavGraph navGraph = navInflater.inflate(R.navigation.nav_graph); // your nav_graph file
+            if (isLoggedIn) {
+                navGraph.setStartDestination(R.id.mainFragment);
+            } else {
+                navGraph.setStartDestination(R.id.welcomeFragment);
+            }
 
-        Log.v("LoggedIn", String.valueOf(isLoggedIn));
-
-        if (isLoggedIn) {
-            navGraph.setStartDestination(R.id.mainFragment); // change to your main fragment ID
+            navController.setGraph(navGraph);
         } else {
-            navGraph.setStartDestination(R.id.welcomeFragment); // change to your welcome/login fragment ID
+            // Restore navigation state
+            navController.restoreState(savedInstanceState.getBundle("nav_state"));
         }
+    }
 
-        navController.setGraph(navGraph);
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        // Save navigation controller state
+        if (navController != null) {
+            outState.putBundle("nav_state", navController.saveState());
+        }
     }
 }

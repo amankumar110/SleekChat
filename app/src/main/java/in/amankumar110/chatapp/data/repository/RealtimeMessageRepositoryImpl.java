@@ -38,6 +38,8 @@ public class RealtimeMessageRepositoryImpl implements RealtimeMessageRepository 
 
         realtimeMessageService.sendMessage(message, sessionId, task -> {
 
+            Log.v("MessageR",task.isSuccessful()+"");
+
             if(task.isSuccessful())
                 listener.onSuccess(null);
             else
@@ -52,6 +54,7 @@ public class RealtimeMessageRepositoryImpl implements RealtimeMessageRepository 
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
 
+                Log.v("MessageR","Child added Successfully");
 
                 if (!snapshot.exists()) {
                     listener.onError(new Exception("Snapshot does not exist"));
@@ -60,28 +63,27 @@ public class RealtimeMessageRepositoryImpl implements RealtimeMessageRepository 
 
                 Message message = snapshot.getValue(Message.class);
 
-                Log.v("MessageR",message.toString());
-
                 listener.onSuccess(message);
             }
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-
+                Log.v("MessageR","Child Changed Successfully");
             }
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot snapshot) {
-
+                Log.v("MessageR","Child Removed Successfully");
             }
 
             @Override
             public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-
+                Log.v("MessageR","Child moved Successfully");
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
+                Log.v("MessageR","Child operation cancelled Successfully");
                 Log.e("Realtime", "Listener canceled: " + error.getMessage());
                 listener.onError(error.toException());
             }

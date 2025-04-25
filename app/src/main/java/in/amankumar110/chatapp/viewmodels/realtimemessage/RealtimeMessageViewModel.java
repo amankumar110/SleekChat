@@ -10,6 +10,7 @@ import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -19,7 +20,8 @@ import in.amankumar110.chatapp.domain.repository.MessageRepository;
 import in.amankumar110.chatapp.domain.repository.RealtimeMessageRepository;
 import in.amankumar110.chatapp.domain.usecases.message.messages.GenerateMessageIdUseCase;
 import in.amankumar110.chatapp.domain.usecases.message.messages.GetMessagesUseCase;
-import in.amankumar110.chatapp.domain.usecases.message.messageseen.MarkMessageAsSeenUseCase;
+import in.amankumar110.chatapp.domain.usecases.message.messagestatus.MarkMessageAsSeenUseCase;
+import in.amankumar110.chatapp.domain.usecases.message.messagestatus.UpdateMessagesStatusUseCase;
 import in.amankumar110.chatapp.domain.usecases.message.realtimesync.SyncMessagesUseCaseWrapper;
 import in.amankumar110.chatapp.domain.usecases.message.messages.UpdateMessageUseCase;
 import in.amankumar110.chatapp.domain.usecases.realtimemessaging.GetRealtimeMessageUseCase;
@@ -39,7 +41,7 @@ public class RealtimeMessageViewModel extends ViewModel {
     private final GenerateMessageIdUseCase generateMessageIdUseCase;
     private final SyncMessagesUseCaseWrapper syncMessagesUseCaseWrapper;
     private final MarkMessageAsSeenUseCase markMessagesAsSeenUseCase;
-    private final UpdateMessageUseCase updateMessageUseCase;
+    private final UpdateMessagesStatusUseCase updateMessagesStatusUseCase;
 
     private final MutableLiveData<List<Message>> _messages = new MutableLiveData<>(null);
     public LiveData<List<Message>> messages = _messages;
@@ -53,30 +55,30 @@ public class RealtimeMessageViewModel extends ViewModel {
     private final MutableLiveData<Boolean> _isLoading = new MutableLiveData<>(false);
     public LiveData<Boolean> isLoading = _isLoading;
 
-    private final MutableLiveData<Boolean> _isMessageSent = new MutableLiveData<>(false);
+    private final MutableLiveData<Boolean> _isMessageSent = new MutableLiveData<>(null);
     public LiveData<Boolean> isMessageSent = _isMessageSent;
     private final MutableLiveData<Boolean> _messagesMarkedAsRead = new MutableLiveData<>(null);
     public LiveData<Boolean> messagesMarkedAsRead = _messagesMarkedAsRead;
     private final List<Message> unsyncedMessages = new ArrayList<>();
     private final MutableLiveData<Boolean> _isMessageUpdated = new MutableLiveData<>(null);
     public LiveData<Boolean> isMessageUpdated = _isMessageUpdated;
+    private final MutableLiveData<Boolean> _messagesStatusUpdated = new MutableLiveData<>(null);
+    public LiveData<Boolean> messagesStatusUpdated = _messagesStatusUpdated;
 
     @Inject
-    public RealtimeMessageViewModel(GetRealtimeMessageUseCase getRealtimeMessageUseCase, SendMessageUseCase sendMessageUseCase, GetMessagesUseCase getMessagesUseCase, GenerateMessageIdUseCase generateMessageIdUseCase, SyncMessagesUseCaseWrapper syncMessagesUseCaseWrapper, MarkMessageAsSeenUseCase markMessagesAsSeenUseCase, UpdateMessageUseCase updateMessageUseCase) {
+    public RealtimeMessageViewModel(GetRealtimeMessageUseCase getRealtimeMessageUseCase, SendMessageUseCase sendMessageUseCase, GetMessagesUseCase getMessagesUseCase, GenerateMessageIdUseCase generateMessageIdUseCase, SyncMessagesUseCaseWrapper syncMessagesUseCaseWrapper, MarkMessageAsSeenUseCase markMessagesAsSeenUseCase, UpdateMessageUseCase updateMessageUseCase, UpdateMessagesStatusUseCase updateMessagesStatusUseCase) {
         this.getRealtimeMessageUseCase = getRealtimeMessageUseCase;
         this.sendMessageUseCase = sendMessageUseCase;
         this.getMessagesUseCase = getMessagesUseCase;
         this.markMessagesAsSeenUseCase = markMessagesAsSeenUseCase;
         this.generateMessageIdUseCase = generateMessageIdUseCase;
         this.syncMessagesUseCaseWrapper = syncMessagesUseCaseWrapper;
-        this.updateMessageUseCase = updateMessageUseCase;
+        this.updateMessagesStatusUseCase = updateMessagesStatusUseCase;
     }
 
     public void addMessage(Message message, String sessionId) {
 
         _isLoading.postValue(true);
-
-        message.setSynced(false);
 
         sendMessageUseCase.execute(message, sessionId, new RealtimeMessageRepository.RealtimeMessageListener<>() {
             @Override
@@ -88,8 +90,8 @@ public class RealtimeMessageViewModel extends ViewModel {
             @Override
             public void onError(Exception exception) {
                 _isLoading.postValue(false);
-                _isMessageSent.postValue(false);
                 _errorMessage.postValue(exception.getMessage());
+                _isMessageSent.postValue(false);
             }
         });
     }
@@ -101,6 +103,7 @@ public class RealtimeMessageViewModel extends ViewModel {
         getRealtimeMessageUseCase.execute(sessionId, new RealtimeMessageRepository.RealtimeMessageListener<Message>() {
             @Override
             public void onSuccess(Message data) {
+                Log.v("MessageFromViewModel",data.toString());
                 _isLoading.postValue(false);
                 unsyncedMessages.add(data);
                 _newMessage.postValue(data);
@@ -108,6 +111,7 @@ public class RealtimeMessageViewModel extends ViewModel {
 
             @Override
             public void onError(Exception exception) {
+                Log.v("MessageFromViewModel",exception.getMessage());
                 _errorMessage.postValue(exception.getMessage());
                 _isLoading.postValue(false);
                 _newMessage.postValue(null);
@@ -153,12 +157,12 @@ public class RealtimeMessageViewModel extends ViewModel {
         deleteMessages.clear();
     }
 
-    public void markSenderMessagesAsSeenIfRequired(ChatSession chatSession) {
+    public void updateSenderMessagesStatus(ChatSession chatSession, Message.MessageStatus messageStatus) {
 
         _isLoading.postValue(true);
 
-        List<Message> filteredMessages = _messages.getValue().stream()
-                .filter(message -> isNotSentByMe(message) && !message.getIsSeen())
+        List<Message> filteredMessages = Objects.requireNonNull(_messages.getValue()).stream()
+                .filter(this::isNotSentByMe)
                 .collect(Collectors.toList());
 
         if(filteredMessages.isEmpty()) {
@@ -166,20 +170,21 @@ public class RealtimeMessageViewModel extends ViewModel {
             return;
         }
 
-        markMessagesAsSeenUseCase.execute(filteredMessages,
-                chatSession,
-                new MessageRepository.MessageListener<>() {
+        filteredMessages.forEach(message -> message.setMessageStatus(messageStatus.getStatus()));
+
+        updateMessagesStatusUseCase.execute(_messages.getValue(), chatSession, new MessageRepository.MessageListener<Void>() {
 
             @Override
             public void onSuccess(Void result) {
+
                 _isLoading.postValue(false);
-                _messagesMarkedAsRead.postValue(true);
+                _messagesStatusUpdated.postValue(true);
             }
 
             @Override
             public void onError(Exception exception) {
                 _isLoading.postValue(false);
-                _messagesMarkedAsRead.postValue(false);
+                _messagesStatusUpdated.postValue(false);
                 _errorMessage.postValue(exception.getMessage());
             }
         });
@@ -202,11 +207,6 @@ public class RealtimeMessageViewModel extends ViewModel {
         return !isLoading.getValue().equals(true);
     }
 
-    public void markLiveMessageAsSeen(Message message) {
-        _messages.getValue().stream()
-                .filter(message::equals)
-                .forEach(message2 -> message2.setIsSeen(true));
-    }
 
     public void resetMessageSent() {
         this._isMessageSent.setValue(null);
@@ -218,5 +218,11 @@ public class RealtimeMessageViewModel extends ViewModel {
 
     public void resetMessagesMarkedAsRead() {
         this._messagesMarkedAsRead.setValue(null);
+    }
+    public void setMessagesStatus(Message.MessageStatus messageStatus) {
+        this.unsyncedMessages.forEach(message -> {
+            if(Message.MessageStatus.shouldUpdateStatus(message.getMessageStatus(),messageStatus.getStatus()))
+                message.setMessageStatus(messageStatus.getStatus());
+        });
     }
 }

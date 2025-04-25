@@ -4,6 +4,7 @@ import static in.amankumar110.chatapp.BR.chatSession;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.WriteBatch;
@@ -65,6 +66,15 @@ public class ChatSessionService {
 
     }
 
+    public void getChatSession(String uid, String chatSessionId, OnCompleteListener<DocumentSnapshot> onCompleteListener) {
+
+        database.collection(COLLECTION_ID)
+                .document(uid)
+                .collection(SESSIONS_COLLECTION_ID)
+                .document(chatSessionId)
+                .get()
+                .addOnCompleteListener(onCompleteListener);
+    }
 
     public void getChatSessions(String uid, OnCompleteListener<QuerySnapshot> onCompleteListener) {
 
@@ -74,6 +84,8 @@ public class ChatSessionService {
                 .get()
                 .addOnCompleteListener(onCompleteListener);
     }
+
+
 
     public void deleteSession(String uid, OnCompleteListener<Void> onCompleteListener) {
 

@@ -4,16 +4,14 @@ public class User {
     private String uid;
     private String phoneNumber;
     private long lastSeen;
-    private boolean isOnline;
     private String messagingToken;
 
     public User() {}
 
-    public User(String uid, String phoneNumber, long lastSeen, boolean isOnline) {
+    public User(String uid, String phoneNumber, long lastSeen) {
         this.uid = uid;
         this.phoneNumber = phoneNumber;
         this.lastSeen = lastSeen;
-        this.isOnline = isOnline;
     }
 
     public String getUid() {
@@ -42,14 +40,6 @@ public class User {
 
     public boolean isUserEmpty() {
         return (uid == null && phoneNumber == null && lastSeen == 0);
-    }
-
-    public boolean getIsOnline() {
-        return isOnline;
-    }
-
-    public void setIsOnline(boolean online) {
-        isOnline = online;
     }
 
     public String getMessagingToken() {

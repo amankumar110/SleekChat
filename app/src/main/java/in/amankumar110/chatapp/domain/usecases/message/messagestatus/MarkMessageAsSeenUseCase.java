@@ -1,4 +1,4 @@
-package in.amankumar110.chatapp.domain.usecases.message.messageseen;
+package in.amankumar110.chatapp.domain.usecases.message.messagestatus;
 
 import java.util.List;
 

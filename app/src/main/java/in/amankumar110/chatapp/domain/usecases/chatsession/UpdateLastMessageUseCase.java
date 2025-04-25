@@ -1,4 +1,4 @@
-package in.amankumar110.chatapp.domain.usecases.chat;
+package in.amankumar110.chatapp.domain.usecases.chatsession;
 
 import in.amankumar110.chatapp.domain.repository.ChatSessionRepository;
 import in.amankumar110.chatapp.models.chat.ChatSession;

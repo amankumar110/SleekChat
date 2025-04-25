@@ -2,7 +2,6 @@ package in.amankumar110.chatapp.ui.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -18,6 +17,7 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import in.amankumar110.chatapp.R;
 import in.amankumar110.chatapp.databinding.CountryCodeItemLayoutBinding;
@@ -31,7 +31,6 @@ public class CountryCodeAdapter extends RecyclerView.Adapter<CountryCodeAdapter.
 
     private List<Country> countryList = new ArrayList<>();
     private Context context;
-
 
     private OnItemClicked onItemClicked;
 
@@ -98,6 +97,13 @@ public class CountryCodeAdapter extends RecyclerView.Adapter<CountryCodeAdapter.
 
     public void setOnItemClicked(OnItemClicked onItemClicked) {
         this.onItemClicked = onItemClicked;
+    }
+
+    public Country getCountryByCode(String code) {
+        return countryList.stream()
+                .filter(country -> country.getCode().equals(code))
+                .collect(Collectors.toList())
+                .get(0);
     }
 
 }

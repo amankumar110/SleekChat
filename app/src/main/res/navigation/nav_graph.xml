@@ -70,4 +70,9 @@
             android:id="@+id/action_chatSessionsFragment_to_chatFragment"
             app:destination="@id/chatFragment" />
     </fragment>
+    <dialog
+        android:id="@+id/internetNotAvailableFragment"
+        android:name="in.amankumar110.chatapp.ui.internet.InternetNotAvailableFragment"
+        android:label="fragment_internet_not_available"
+        tools:layout="@layout/fragment_internet_not_available" />
 </navigation>

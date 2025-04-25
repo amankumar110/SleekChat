@@ -42,7 +42,6 @@ public class RealtimeMessageService {
     }
 
     public void getMessages(String sessionId, ChildEventListener childEventListener) {
-
         realtimeDatabase
                 .getReference(COLLECTION_NAME)
                 .child(sessionId)

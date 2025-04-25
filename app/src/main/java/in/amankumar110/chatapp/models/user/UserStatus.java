@@ -23,6 +23,7 @@ public class UserStatus {
     private long lastSeen;
     private String sessionId;
 
+
     public UserStatus(Status status, long lastSeen) {
         this.status = status.getName();
         this.lastSeen = lastSeen;
@@ -53,5 +54,14 @@ public class UserStatus {
 
     public void setSessionId(String sessionId) {
         this.sessionId = sessionId;
+    }
+
+    @Override
+    public String toString() {
+        return "UserStatus{" +
+                "status='" + status + '\'' +
+                ", lastSeen=" + lastSeen +
+                ", sessionId='" + sessionId + '\'' +
+                '}';
     }
 }

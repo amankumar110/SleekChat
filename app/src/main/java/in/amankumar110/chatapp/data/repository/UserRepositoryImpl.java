@@ -3,12 +3,7 @@ package in.amankumar110.chatapp.data.repository;
 import android.content.Context;
 import android.util.Log;
 
-import androidx.annotation.NonNull;
-
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firestore.v1.Document;
 
 import java.util.List;
 import java.util.Map;
@@ -16,11 +11,9 @@ import java.util.Map;
 import dagger.hilt.android.qualifiers.ApplicationContext;
 import in.amankumar110.chatapp.R;
 import in.amankumar110.chatapp.data.remote.UserService;
-import in.amankumar110.chatapp.domain.common.Result;
-import in.amankumar110.chatapp.models.user.User;
 import in.amankumar110.chatapp.domain.repository.UserRepository;
 import in.amankumar110.chatapp.exceptions.UserNotExistException;
-import in.amankumar110.chatapp.models.user.UserStatus;
+import in.amankumar110.chatapp.models.user.User;
 import jakarta.inject.Inject;
 
 public class UserRepositoryImpl implements UserRepository {
@@ -49,22 +42,22 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public void getUser(String UId, UserListener<User> userListener) {
-        userService.getUser(UId,task -> {
+    public void getUserByUId(String UId, UserListener<User> userListener) {
+        userService.getUser(UId, task -> {
 
-                    if (task.isSuccessful()) {
+            if (task.isSuccessful()) {
 
-                        DocumentSnapshot document = task.getResult();
+                DocumentSnapshot document = task.getResult();
 
-                        if (document != null && document.exists())
-                            userListener.onSuccess(document.toObject(User.class));
-                        else
-                            userListener.onError(new UserNotExistException(appContext.getString(R.string.user_not_exist_message)));
-                    } else {
-                        Log.e("ChatApp12", task.getException().getLocalizedMessage());
-                        userListener.onError(task.getException());
-                    }
-                });
+                if (document != null && document.exists())
+                    userListener.onSuccess(document.toObject(User.class));
+                else
+                    userListener.onError(new UserNotExistException(appContext.getString(R.string.user_not_exist_message)));
+            } else {
+                Log.e("ChatApp12", task.getException().getLocalizedMessage());
+                userListener.onError(task.getException());
+            }
+        });
     }
 
     @Override
@@ -83,7 +76,6 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public void getUserByPhoneNumber(String phoneNumber, UserListener<User> userListener) {
-
 
         userService.getUserByPhoneNumber(phoneNumber, task -> {
             if (!task.isSuccessful()) {

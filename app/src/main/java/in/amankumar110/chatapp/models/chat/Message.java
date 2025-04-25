@@ -2,12 +2,44 @@ package in.amankumar110.chatapp.models.chat;
 
 import androidx.annotation.Nullable;
 
+import java.util.List;
+
 public class Message {
+
+    public enum MessageStatus {
+
+        SENT("sent"),
+        RECEIVER_ONLINE("receiver_online"),
+        SEEN("seen");
+
+        MessageStatus(String status) {
+            this.status = status;
+        }
+
+        private String status;
+
+        public String getStatus() {
+            return status;
+        }
+
+        public static boolean shouldUpdateStatus(String current, String incoming) {
+            if (current == null) return true;
+
+            List<String> order = List.of(
+                    Message.MessageStatus.SENT.getStatus(),
+                    Message.MessageStatus.RECEIVER_ONLINE.getStatus(),
+                    Message.MessageStatus.SEEN.getStatus()
+            );
+
+            return order.indexOf(incoming) > order.indexOf(current);
+        }
+
+    }
 
     private String senderUId, receiverUId, message, id;
     private Long sentAt;
 
-    private boolean isSeen=false,  isSynced = true;
+    private String messageStatus;
 
     public Message() {
     }
@@ -52,23 +84,16 @@ public class Message {
         this.id = id;
     }
 
-    public boolean isSynced() {
-        return isSynced;
-    }
-
-    public void setSynced(boolean synced) {
-        isSynced = synced;
-    }
 
     @Override
     public String toString() {
         return "Message{" +
-                "senderUId='" + senderUId + '\'' +
-                ", receiverUId='" + receiverUId + '\'' +
-                ", message='" + message + '\'' +
-                ", id='" + id + '\'' +
+                "messageStatus='" + messageStatus + '\'' +
                 ", sentAt=" + sentAt +
-                ", isSeen=" + isSeen +
+                ", id='" + id + '\'' +
+                ", message='" + message + '\'' +
+                ", receiverUId='" + receiverUId + '\'' +
+                ", senderUId='" + senderUId + '\'' +
                 '}';
     }
 
@@ -80,11 +105,12 @@ public class Message {
         return id.equals(message.id);  // assuming `id` is non-null
     }
 
-    public boolean getIsSeen() {
-        return isSeen;
+    public void setMessageStatus(String messageStatus) {
+        this.messageStatus = messageStatus;
     }
 
-    public void setIsSeen(boolean seen) {
-        isSeen = seen;
+    public String getMessageStatus() {
+        return messageStatus;
     }
+
 }

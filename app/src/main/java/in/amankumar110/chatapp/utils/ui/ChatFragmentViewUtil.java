@@ -4,6 +4,7 @@ import static androidx.core.content.ContentProviderCompat.requireContext;
 
 import android.content.Context;
 import android.os.Parcelable;
+import android.util.Log;
 
 import in.amankumar110.chatapp.databinding.FragmentChatBinding;
 import in.amankumar110.chatapp.models.user.UserStatus;
@@ -12,6 +13,8 @@ import in.amankumar110.chatapp.utils.UiHelper;
 public class ChatFragmentViewUtil {
 
     public static void clearMessageField(Context context, FragmentChatBinding binding) {
+
+
         binding.chatBottomBarLayout.etMessage.setText("");
         binding.chatBottomBarLayout.etMessage.clearFocus();
         UiHelper.hideKeyboard(context, binding.chatBottomBarLayout.etMessage.getWindowToken());

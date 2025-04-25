@@ -30,20 +30,22 @@ import in.amankumar110.chatapp.models.chat.ChatSession;
 import in.amankumar110.chatapp.models.chat.Message;
 import in.amankumar110.chatapp.models.user.UserStatus;
 import in.amankumar110.chatapp.ui.chat.adapters.MessagesAdapter;
-import in.amankumar110.chatapp.ui.chat.fragments.MessageEditDialogFragment;
+import in.amankumar110.chatapp.ui.internet.InternetNotAvailableFragment;
 import in.amankumar110.chatapp.utils.DateHelper;
+import in.amankumar110.chatapp.utils.InternetHelper;
+import in.amankumar110.chatapp.utils.NetworkConnectionLiveData;
 import in.amankumar110.chatapp.utils.SoundPlayer;
 import in.amankumar110.chatapp.utils.UiHelper;
 import in.amankumar110.chatapp.utils.ui.ChatFragmentViewUtil;
 import in.amankumar110.chatapp.viewmodels.chat.ChatSessionViewModel;
-import in.amankumar110.chatapp.viewmodels.message.MessageViewModel;
 import in.amankumar110.chatapp.viewmodels.messageupdate.MessageUpdateViewModel;
 import in.amankumar110.chatapp.viewmodels.realtimemessage.RealtimeMessageViewModel;
 import in.amankumar110.chatapp.viewmodels.user.RealtimeStatusViewModel;
 
 @AndroidEntryPoint
 public class ChatFragment extends Fragment {
-
+    
+    private final Gson gson = new Gson();
     public static final String ARG_CHAT_SESSION = "chat_session";
     private static final String ARG_RECYCLERVIEW_STATE = "recyclerview_state";
     private static final String ARG_MESSAGES_JSON = "messages";
@@ -57,6 +59,7 @@ public class ChatFragment extends Fragment {
     private ChatSession chatSession;
     private NavController navController;
     private Parcelable recyclerViewState;
+    private NetworkConnectionLiveData networkConnectionLiveData;
 
     public ChatFragment() {
     }
@@ -94,6 +97,7 @@ public class ChatFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 
+        observeWifi();
         showInChat();
         setupTopBar();
         initializeRecyclerView();
@@ -105,9 +109,21 @@ public class ChatFragment extends Fragment {
         }
 
         realtimeMessageViewModel.observeNewMessage(chatSession.getSessionId());
-        realtimeStatusViewModel.getUserStatus(chatSession.getReceiverUid());
+        realtimeStatusViewModel.getUserStatusIfRequired(chatSession.getReceiverUid());
         messageUpdateViewModel.onNewDeletedMessage(chatSession.getSessionId());
         messageUpdateViewModel.onNewUpdatedMessage(chatSession.getSessionId());
+    }
+
+    private void observeWifi() {
+
+        this.networkConnectionLiveData = new NetworkConnectionLiveData(requireContext());
+
+        networkConnectionLiveData.observe(getViewLifecycleOwner(), isConnected -> {
+            if(!isConnected) {
+                InternetNotAvailableFragment internetNotAvailableFragment = InternetNotAvailableFragment.newInstance();
+                internetNotAvailableFragment.show(getChildFragmentManager(),null);
+            }
+        });
     }
 
     private void showInChat() {
@@ -146,7 +162,6 @@ public class ChatFragment extends Fragment {
         observeMessageSent();
         listenToNewMessage();
         observeReceiverOnlineStatus();
-        observeMessagesMarkedAsSeen();
         observeMessageUpdate();
         observeMessageDelete();
     }
@@ -154,8 +169,6 @@ public class ChatFragment extends Fragment {
     private void observeMessageUpdate() {
 
         messageUpdateViewModel.newUpdatedMessage.observe(getViewLifecycleOwner(),updatedMessage -> {
-
-
 
             if(!messageUpdateViewModel.isIdle() || updatedMessage==null)
                 return;
@@ -176,7 +189,6 @@ public class ChatFragment extends Fragment {
             if(!messageUpdateViewModel.isIdle() || deletedMessage==null)
                 return;
 
-            Log.v("ChatFragment","A Message was Deleted");
             messagesAdapter.reflectDeletedMessage(deletedMessage);
             messages.remove(deletedMessage);
 
@@ -185,21 +197,38 @@ public class ChatFragment extends Fragment {
     }
 
     private void observeReceiverOnlineStatus() {
-
         realtimeStatusViewModel.userStatus.observe(getViewLifecycleOwner(), userStatus -> {
 
-            if (userStatus == null)
-                return;
+            Log.v("UserStatus",userStatus==null?"Null" : userStatus.getStatus());
 
-            Log.v("isOnline", ChatFragmentViewUtil.isOnline(userStatus.getStatus()) + "");
-            Log.v("isInChat", ChatFragmentViewUtil.isInChat(userStatus.getStatus()) + "");
-            Log.v("isOffline", ChatFragmentViewUtil.isOffline(userStatus.getStatus()) + "");
+            if (userStatus == null) return;
 
-
-            if (ChatFragmentViewUtil.isInChat(userStatus.getStatus())) {
-                messagesAdapter.markMessagesAsSeen();
-            }
             showUserStatus(userStatus);
+
+            Message.MessageStatus newStatus;
+            if (isReceiverInCurrentChat()) {
+                newStatus = Message.MessageStatus.SEEN;
+            } else if (isReceiverOnline()) {
+                newStatus = Message.MessageStatus.RECEIVER_ONLINE;
+            } else {
+                newStatus = Message.MessageStatus.SENT;
+            }
+
+            boolean updated = false;
+
+            for (Message message : messages) {
+                String currentStatus = message.getMessageStatus();
+                if (Message.MessageStatus.shouldUpdateStatus(currentStatus, newStatus.getStatus())) {
+                    message.setMessageStatus(newStatus.getStatus());
+                    updated = true;
+                }
+            }
+
+            if (updated) {
+                messagesAdapter.setMessageList(messages);
+                realtimeMessageViewModel.setMessagesStatus(newStatus); // Only update backend if needed
+            }
+
         });
     }
 
@@ -227,22 +256,23 @@ public class ChatFragment extends Fragment {
             if (!realtimeMessageViewModel.isIdle() || message == null)
                 return;
 
+            Log.v("NNM",message.toString());
+
             if (!messagesAdapter.contains(message)) {
 
-                if (message.getSenderUId().equals(FirebaseAuth.getInstance().getUid()) &&
-                        realtimeStatusViewModel.userStatus.getValue()!=null &&
-                        ChatFragmentViewUtil.isInChat(
-                                realtimeStatusViewModel.userStatus.getValue().getStatus())
-                ) {
-                    realtimeMessageViewModel.markLiveMessageAsSeen(message);
-                    message.setIsSeen(true);
-                }
+                Log.v("ChatFragment","New Message Received");
                 messagesAdapter.addMessage(message);
                 messages.add(message);
             }
         });
 
         realtimeMessageViewModel.resetNewMessage();
+
+    }
+
+    private boolean isReceiverInCurrentChat() {
+        return realtimeStatusViewModel.userStatus.getValue().getStatus().equals(UserStatus.Status.IN_CHAT.getName()) &&
+                realtimeStatusViewModel.userStatus.getValue().getSessionId().equals(chatSession.getSessionId());
     }
 
     private void observeMessagesLoaded() {
@@ -261,24 +291,10 @@ public class ChatFragment extends Fragment {
             if(liveMessages!=null)
                 messages.addAll(liveMessages);
 
+            Log.v("MessageListAfter",messages.toString());
             showMessages(messages);  // Update RecyclerView
             // Mark Unseen Messages as Seen of the other sender
-            realtimeMessageViewModel.markSenderMessagesAsSeenIfRequired(chatSession);
-        });
-    }
-
-    public void observeMessagesMarkedAsSeen() {
-
-        realtimeMessageViewModel.messagesMarkedAsRead.observe(getViewLifecycleOwner(), isMarked -> {
-
-            if (!realtimeMessageViewModel.isIdle() || isMarked==null)
-                return;
-
-            if (Boolean.TRUE.equals(isMarked)) {
-                messagesAdapter.markMessagesAsSeen();
-            }
-
-            realtimeMessageViewModel.resetMessagesMarkedAsRead();
+            realtimeMessageViewModel.updateSenderMessagesStatus(chatSession, Message.MessageStatus.SEEN);
         });
     }
 
@@ -288,11 +304,22 @@ public class ChatFragment extends Fragment {
     }
 
     private void showMessages(List<Message> messageList) {
+
+        Log.v("ChatFragment","I m Showing");
+        Log.v("ChatFragment","Generic");
         messagesAdapter.setMessageList(messageList);  // Pass the updated list
         ChatFragmentViewUtil.restoreScrollIfPossible(recyclerViewState, binding);
     }
 
     private void sendMessage(String messageText) {
+
+        // Clear Message Input
+        ChatFragmentViewUtil.clearMessageField(requireContext(), binding);
+
+        if(!InternetHelper.isInternetAvailable(requireContext())) {
+            UiHelper.showMessage(requireContext(), R.string.internet_required_message);
+            return;
+        }
 
         Message message = new Message();
         message.setMessage(messageText);
@@ -301,38 +328,55 @@ public class ChatFragment extends Fragment {
         message.setReceiverUId(chatSession.getReceiverUid());
         message.setId(realtimeMessageViewModel.generateUniqueMessageId(message.getSenderUId(), message.getReceiverUId()));
 
+        if(isReceiverInCurrentChat())
+            message.setMessageStatus(Message.MessageStatus.SEEN.getStatus());
+        else if(isReceiverOnline())
+            message.setMessageStatus(Message.MessageStatus.RECEIVER_ONLINE.getStatus());
+        else
+            message.setMessageStatus(Message.MessageStatus.SENT.getStatus());
+
         realtimeMessageViewModel.addMessage(message, chatSession.getSessionId());
     }
 
-    private void observeMessageSent() {
+    private boolean isReceiverOnline() {
+        return realtimeStatusViewModel.userStatus.getValue().getStatus().equals(UserStatus.Status.ONLINE.getName());
+    }
 
+    private void observeMessageSent() {
         realtimeMessageViewModel.isMessageSent.observe(getViewLifecycleOwner(), isSent -> {
 
-            ChatFragmentViewUtil.clearMessageField(requireContext(), binding);
+            Log.v("IsMessageSent",isSent==null?"Null":isSent.toString());
 
-            if (!realtimeMessageViewModel.isIdle() || isSent==null)
-                return;
-
-            if (isSent) {
-                SoundPlayer.playSound(requireContext(), R.raw.message_sent);
+            // If the message is idle or 'isSent' is null, we don't want to proceed
+            if (!realtimeMessageViewModel.isIdle() || isSent == null) {
                 return;
             }
 
+            // Ensure that the message is cleared after the state changes to null (message sent)
+            if (isSent) {
+                SoundPlayer.playSound(requireContext(), R.raw.message_sent);
+
+                return; // Exit early, no further action needed
+            }
+
+            // If the message wasn't sent, check for any error message and display it
             if (realtimeMessageViewModel.errorMessage.getValue() != null) {
                 String errorMessage = realtimeMessageViewModel.errorMessage.getValue();
                 UiHelper.showMessage(requireContext(), errorMessage);
             }
 
+            // Reset the message sent flag
             realtimeMessageViewModel.resetMessageSent();
         });
     }
+
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         // Save RecyclerView scroll state
-        String chatSessionJson = new Gson().toJson(chatSession);
-        String messagesJson = new Gson().toJson(messages);
+        String chatSessionJson = gson.toJson(chatSession);
+        String messagesJson = gson.toJson(messages);
         recyclerViewState = binding.rvMessages.getLayoutManager().onSaveInstanceState();
 
         outState.putString(ARG_CHAT_SESSION, chatSessionJson);
@@ -347,9 +391,9 @@ public class ChatFragment extends Fragment {
         if (savedInstanceState != null) {
             recyclerViewState = savedInstanceState.getParcelable(ARG_RECYCLERVIEW_STATE);
             String chatSessionJson = savedInstanceState.getString(ARG_CHAT_SESSION);
-            this.chatSession = new Gson().fromJson(chatSessionJson, ChatSession.class);
+            this.chatSession = gson.fromJson(chatSessionJson, ChatSession.class);
             String messagesJson = savedInstanceState.getString(ARG_MESSAGES_JSON);
-            this.messages = new Gson().fromJson(messagesJson, new TypeToken<List<Message>>() {}.getType());
+            this.messages = gson.fromJson(messagesJson, new TypeToken<List<Message>>() {}.getType());
         }
     }
 
@@ -373,6 +417,7 @@ public class ChatFragment extends Fragment {
     private void showOnline() {
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         UserStatus userStatus = new UserStatus(UserStatus.Status.ONLINE, System.currentTimeMillis());
+        userStatus.setSessionId("");
         realtimeStatusViewModel.setUserStatus(uid, userStatus);
     }
 

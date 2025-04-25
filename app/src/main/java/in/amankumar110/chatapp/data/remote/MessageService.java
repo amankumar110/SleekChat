@@ -42,15 +42,6 @@ public class MessageService {
 
         // Loop through all messages and prepare them for batch operation
         for (Message message : messages) {
-            // Create a Map to hold the message data, map the fields as required
-            Map<String, Object> messageData = new HashMap<>();
-            messageData.put("id",message.getId());
-            messageData.put("senderUId", message.getSenderUId());
-            messageData.put("receiverUId", message.getReceiverUId());
-            messageData.put("message", message.getMessage()); // Assuming Message has a getMessageContent() method
-            messageData.put("sentAt", message.getSentAt());  // You can add a timestamp field
-            messageData.put("isSeen", message.getIsSeen());
-
             // If the Message class has other fields, include them as needed
             // messageData.put("sender", message.getSender());
 
@@ -61,7 +52,7 @@ public class MessageService {
                     .document(message.getId());  // Firestore auto-generates the document ID
 
             // Add the set operation to the batch
-            batch.set(newMessageRef, messageData);
+            batch.set(newMessageRef, message);
         }
 
         // Commit the batch
@@ -96,6 +87,22 @@ public class MessageService {
                     .document(message.getId()); // Assuming Message has getMessageId()
 
             batch.update(docRef, "isSeen", true);
+        }
+
+        batch.commit().addOnCompleteListener(onCompleteListener);
+    }
+
+    public void updateMessagesStatus(List<Message> messages, ChatSession chatSession, OnCompleteListener<Void> onCompleteListener) {
+
+        WriteBatch batch = firestore.batch();
+
+        for (Message message : messages) {
+            DocumentReference docRef = firestore.collection(COLLECTION_ID)
+                    .document(chatSession.getSessionId())
+                    .collection(MESSAGES_COLLECTION_ID)
+                    .document(message.getId()); // Assuming Message has getMessageId()
+
+            batch.update(docRef, "messageStatus", message.getMessageStatus());
         }
 
         batch.commit().addOnCompleteListener(onCompleteListener);

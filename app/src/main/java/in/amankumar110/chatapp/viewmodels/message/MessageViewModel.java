@@ -11,7 +11,7 @@ import javax.inject.Inject;
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import in.amankumar110.chatapp.domain.repository.MessageRepository;
 import in.amankumar110.chatapp.domain.usecases.message.messages.GetMessagesUseCase;
-import in.amankumar110.chatapp.domain.usecases.message.messageseen.MarkMessageAsSeenUseCase;
+import in.amankumar110.chatapp.domain.usecases.message.messagestatus.MarkMessageAsSeenUseCase;
 import in.amankumar110.chatapp.domain.usecases.message.messages.SendMessageUseCase;
 import in.amankumar110.chatapp.models.chat.Message;
 

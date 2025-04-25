@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">ChatApp</string>
+    <string name="app_name">SleekChat</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank chatFragment</string>
     <string name="btn_signup_text">Lets Get Started</string>
@@ -42,4 +42,10 @@
     <string name="default_notification_channel_id">messaging_id</string>
     <string name="messaging_notification_heading">Someone Sent You a Message</string>
     <string name="internet_not_available">Network Issue Occurred While Signing In.</string>
+    <string name="session_creation_error">Session Couldnot Be Created</string>
+    <string name="user_already_exists_message">This Number Already Exists</string>
+    <string name="internet_required_message">Intenet is Required to Send a Message</string>
+    <string name="internet_required_description">An Active Internet Connection Is Required To Continue using this app. Please Connect to an internet to continue.</string>
+    <string name="internet_required_title">Please Connect To Internet</string>
+    <string name="close_app">Close App</string>
 </resources>

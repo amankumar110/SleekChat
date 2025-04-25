@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.WriteBatch;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -28,12 +29,12 @@ public class ChatSessionRepositoryImpl implements ChatSessionRepository {
 
 
     @Override
-    public void createChatSession(ChatSession senderSession, ChatSession receiverSession, ChatSessionListener<Void> listener) {
+    public void createChatSession(ChatSession senderSession, ChatSession receiverSession, ChatSessionListener<ChatSession> listener) {
 
         chatSessionService.createChatSession(senderSession, receiverSession, task -> {
 
             if(task.isSuccessful())
-                listener.onSuccess(null);
+                listener.onSuccess(senderSession);
             else
                 handleError(listener, "Chat session could not be created");
         });
@@ -54,6 +55,23 @@ public class ChatSessionRepositoryImpl implements ChatSessionRepository {
 
             listener.onSuccess(sessions);
         });
+    }
+
+    @Override
+    public void getChatSession(String uid, String sessionId, ChatSessionListener<ChatSession> chatSessionListener) {
+
+        chatSessionService.getChatSession(uid, sessionId, task -> {
+
+            if(task.isSuccessful()) {
+
+                ChatSession chatSession = task.getResult().toObject(ChatSession.class);
+                chatSessionListener.onSuccess(chatSession);
+            } else {
+                handleError(chatSessionListener, "Chat session could not be fetched");
+            }
+
+        });
+
     }
 
     public void updateLastMessage(ChatSession chatSession, String lastMessage, ChatSessionListener<Void> listener) {

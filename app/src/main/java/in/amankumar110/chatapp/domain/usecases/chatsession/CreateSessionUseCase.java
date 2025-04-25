@@ -1,8 +1,7 @@
-package in.amankumar110.chatapp.domain.usecases.chat;
+package in.amankumar110.chatapp.domain.usecases.chatsession;
 
 import javax.inject.Inject;
 
-import in.amankumar110.chatapp.domain.common.Result;
 import in.amankumar110.chatapp.domain.repository.ChatSessionRepository;
 import in.amankumar110.chatapp.domain.repository.UserRepository;
 import in.amankumar110.chatapp.exceptions.ChatSessionException;
@@ -20,7 +19,7 @@ public class CreateSessionUseCase {
         this.chatSessionRepository = chatSessionRepository;
     }
 
-    public void execute(String senderPhoneNumber, String receiverPhoneNumber, ChatSessionRepository.ChatSessionListener<Void> listener) {
+    public void execute(String senderPhoneNumber, String receiverPhoneNumber, ChatSessionRepository.ChatSessionListener<ChatSession> listener) {
 
         userRepository.getUserByPhoneNumber(senderPhoneNumber, new UserRepository.UserListener<User>() {
             @Override
@@ -35,7 +34,7 @@ public class CreateSessionUseCase {
         });
     }
 
-    private void fetchReceiverAndCreateSession(User sender, String receiverPhoneNumber, ChatSessionRepository.ChatSessionListener<Void> listener) {
+    private void fetchReceiverAndCreateSession(User sender, String receiverPhoneNumber, ChatSessionRepository.ChatSessionListener<ChatSession> listener) {
         userRepository.getUserByPhoneNumber(receiverPhoneNumber, new UserRepository.UserListener<User>() {
             @Override
             public void onSuccess(User receiver) {
@@ -49,7 +48,7 @@ public class CreateSessionUseCase {
         });
     }
 
-    private void createChatSession(User sender, User receiver, ChatSessionRepository.ChatSessionListener<Void> listener) {
+    private void createChatSession(User sender, User receiver, ChatSessionRepository.ChatSessionListener<ChatSession> listener) {
         String sessionId = chatSessionRepository.generateSessionId(sender.getUid(), receiver.getUid());
 
         ChatSession senderSession = new ChatSession(

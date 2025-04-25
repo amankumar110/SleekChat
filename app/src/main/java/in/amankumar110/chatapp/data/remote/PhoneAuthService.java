@@ -6,6 +6,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthOptions;
 import com.google.firebase.auth.PhoneAuthProvider;
+import com.google.firebase.auth.SignInMethodQueryResult;
 
 import java.util.concurrent.TimeUnit;
 
@@ -39,5 +40,6 @@ public class PhoneAuthService {
         PhoneAuthCredential credential = PhoneAuthProvider.getCredential(verificationId, otp);
         firebaseAuth.signInWithCredential(credential).addOnCompleteListener(callback);
     }
+
 
 }

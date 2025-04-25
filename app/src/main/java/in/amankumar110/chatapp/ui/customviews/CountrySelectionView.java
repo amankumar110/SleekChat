@@ -1,6 +1,8 @@
 package in.amankumar110.chatapp.ui.customviews;
 
 import android.content.Context;
+import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +17,7 @@ import in.amankumar110.chatapp.databinding.CountryItemsSelectionDropdownBinding;
 import in.amankumar110.chatapp.databinding.SelectedCountryDisplayLayoutBinding;
 import in.amankumar110.chatapp.models.auth.Country;
 import in.amankumar110.chatapp.ui.adapters.CountryCodeAdapter;
+import in.amankumar110.chatapp.utils.CountryCodeUtil;
 
 public class CountrySelectionView extends LinearLayout {
     private Context context;
@@ -22,6 +25,8 @@ public class CountrySelectionView extends LinearLayout {
     private CountryItemsSelectionDropdownBinding binding;
     private RecyclerView recyclerView;
     private CountryCodeAdapter adapter;
+    private String phoneCode = null;
+    private static final String ARG_PHONE_CODE = "phone_code";
 
     public CountrySelectionView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -35,6 +40,7 @@ public class CountrySelectionView extends LinearLayout {
         inflateLayout();
         setupCountryList();
         setupListeners();
+        setDefaultCountry(CountryCodeUtil.getUsCountry());
     }
 
     private void inflateLayout() {
@@ -58,6 +64,7 @@ public class CountrySelectionView extends LinearLayout {
 
         // Handle item click
         adapter.setOnItemClicked(country -> {
+            this.phoneCode = country.getCode();
             CountrySelectionView.this.displayBinding.setCountry(country);
             recyclerView.setVisibility(GONE);
         });
@@ -65,10 +72,47 @@ public class CountrySelectionView extends LinearLayout {
 
 
     public void setDefaultCountry(Country country) {
+        this.phoneCode = country.getCode();
         displayBinding.setCountry(country);
     }
 
     public String getSelectedCode() {
         return binding.selectedViewContainer.tvCountryCode.getText().toString();
+    }
+
+    public void setDefaultCountryByCode(String code) {
+        recyclerView.post(()->{
+            Country country = adapter.getCountryByCode(code);
+            displayBinding.setCountry(country);
+            recyclerView.setVisibility(GONE);
+        });
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Parcelable state) {
+        if (state instanceof Bundle) {
+            Bundle bundle = (Bundle) state;
+
+            phoneCode = bundle.getString(ARG_PHONE_CODE);
+
+            // Restore default country if needed
+            if (phoneCode != null) {
+                setDefaultCountryByCode(phoneCode);
+            }
+
+            Parcelable superState = bundle.getParcelable("super_state");
+            super.onRestoreInstanceState(superState);
+        } else {
+            super.onRestoreInstanceState(state);
+        }
+    }
+
+    @Nullable
+    @Override
+    protected Parcelable onSaveInstanceState() {
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("super_state", super.onSaveInstanceState());
+        bundle.putString(ARG_PHONE_CODE, phoneCode);
+        return bundle;
     }
 }

@@ -1,5 +1,6 @@
 package in.amankumar110.chatapp.ui.chat.adapters;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -105,21 +106,35 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
 
     public void setMessageList(List<Message> messageList) {
+        Log.v("MessagesAdapter",messageList.toString());
         this.messageList = messageList != null ? new ArrayList<>(messageList) : new ArrayList<>();
         notifyDataSetChanged();
         recyclerView.scrollToPosition(getItemCount()-1);
     }
 
     public void addMessage(Message message) {
-
         if (messageList == null) {
             messageList = new ArrayList<>();
         }
 
-        messageList.add(message);
-        notifyDataSetChanged();
-        recyclerView.scrollToPosition(getItemCount()-1);
+        boolean wasEmptyBefore = messageList.isEmpty();
+
+        // Avoid duplicate messages
+        if (!contains(message)) {
+            messageList.add(message);
+
+            if (wasEmptyBefore) {
+                // Remove the "NoMessage" view and notify full data change
+                notifyItemRemoved(0); // remove the placeholder
+                notifyItemInserted(0); // insert the first message
+            } else {
+                notifyItemInserted(messageList.size() - 1);
+            }
+
+            recyclerView.scrollToPosition(messageList.size() - 1);
+        }
     }
+
 
     public boolean contains(Message message) {
         return messageList.stream().anyMatch(m -> m.getId().equals(message.getId()));
@@ -129,12 +144,6 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
         this.recyclerView = recyclerView;
-    }
-
-    public void markMessagesAsSeen() {
-        messageList.stream().filter(this::isMessageSent) // Filtered Messages
-                .forEach(message -> message.setIsSeen(true));
-        notifyDataSetChanged();
     }
 
     public void reflectUpdateMessage(Message updatedMessage) {
@@ -180,7 +189,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     public class MessageRightViewHolder extends RecyclerView.ViewHolder {
 
-        private MessageRightItemLayoutBinding binding;
+        private final MessageRightItemLayoutBinding binding;
 
         public void bind(Message message) {
 
@@ -188,10 +197,13 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             binding.vMessageItemLayout.tvMessage.setText(message.getMessage());
             binding.vMessageItemLayout.tvMessageTime.setText(formattedTime);
 
-            if(message.getIsSeen())
-                binding.ivUserStatus.setImageResource(R.drawable.ic_receiver_online);
-            else
+
+            if(message.getMessageStatus().equals(Message.MessageStatus.SENT.getStatus()))
                 binding.ivUserStatus.setImageResource(R.drawable.ic_sent);
+            else if(message.getMessageStatus().equals(Message.MessageStatus.RECEIVER_ONLINE.getStatus()))
+                binding.ivUserStatus.setImageResource(R.drawable.ic_receiver_online);
+            else if(message.getMessageStatus().equals(Message.MessageStatus.SEEN.getStatus()))
+                binding.ivUserStatus.setImageResource(R.drawable.ic_message_seen);
 
             binding.vMessageItemLayout.getRoot().setOnLongClickListener(view -> {
 

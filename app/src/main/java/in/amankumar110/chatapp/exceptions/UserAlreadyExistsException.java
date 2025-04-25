@@ -1,0 +1,7 @@
+package in.amankumar110.chatapp.exceptions;
+
+public class UserAlreadyExistsException extends RuntimeException {
+    public UserAlreadyExistsException(String message) {
+        super(message);
+    }
+}

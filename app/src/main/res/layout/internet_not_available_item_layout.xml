@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="wrap_content"
+android:orientation="vertical"
+android:layout_height="wrap_content">
+
+<com.google.android.material.card.MaterialCardView
+    app:cardCornerRadius="10dp"
+    app:cardElevation="5dp"
+    android:layout_margin="10dp"
+    android:layout_width="wrap_content"
+    style="@style/cardStyle"
+    android:layout_height="wrap_content">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="wrap_content"
+        android:padding="20dp"
+        android:layout_height="wrap_content">
+
+
+        <TextView
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:textSize="18sp"
+            android:fontFamily="@font/poppins_semibold"
+            android:text="@string/internet_required_title"
+            android:id="@+id/tv_edit_message_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+
+        <EditText
+            android:layout_marginTop="10dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_edit_message_title"
+            android:background="@null"
+            android:text="@string/internet_required_description"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:maxHeight="250dp"
+            android:cursorVisible="true"
+            android:textColor="?android:textColor"
+            android:id="@+id/et_edit_message"/>
+
+        <Button
+            android:id="@+id/btn_close_app"
+            android:textSize="12sp"
+            android:layout_marginTop="20dp"
+            style="@style/FilledButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/close_app"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/et_edit_message" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>
+
+
+</LinearLayout>
+
+
