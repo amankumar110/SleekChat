@@ -11,11 +11,11 @@ The application perfectly communicates the availability between the users. It re
 
 ### Material UI
 
-The app experience is unique and well crafted using material3 recommended theme and design. The app is compteting with other modern android apps.
+The app experience is unique and well crafted using material3 recommended theme and design. The app is competing with other modern android apps.
 
 ### Message Status
 
-The message status is updated automatically by tracking the presence of the receiver. Right now, There are three states i.e. Sent, Seeable (receier is using the app but not in chat), and SEEN.
+The message status is updated automatically by tracking the presence of the receiver. Right now, There are three states i.e. Sent, Seeable (receiver is using the app but not in chat), and SEEN.
 
 ### Push Notifications
 
