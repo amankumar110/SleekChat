@@ -19,7 +19,7 @@ The message status is updated automatically by tracking the presence of the rece
 
 ### Push Notifications
 
-Notifications are sent and received with the message and sender's informaton to ensure ontime delivery of critical information even if the app is closed. This is acheived by making use of NodeJS and Firebase service account.
+Notifications are sent and received with the message and sender's information to ensure ontime delivery of critical information even if the app is closed. This is acheived by making use of NodeJS and Firebase service account.
 
 
 ## Development Techniques
