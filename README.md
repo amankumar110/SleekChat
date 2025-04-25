@@ -62,3 +62,10 @@ The development couldn't have completed in such a short span without the assista
 
 ## Screenshots
 
+<img src="splash.jpg" width="400"/>
+<img src="main.jpg" width="400"/>
+<img src="chat.jpg" width="400"/>
+<img src="welcome2.jpg" width="400"/>
+<img src="welcome.jpg" width="400"/>
+<img src="main_dark.jpg" width="400"/>
+
