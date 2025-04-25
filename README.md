@@ -68,12 +68,10 @@ The development couldn't have completed in such a short span without the assista
   <tr>
     <td><img src="splash.jpeg" width="300"/></td>
     <td><img src="main.jpeg" width="300"/></td>
-  </tr>
-  <tr>
     <td><img src="chat.jpeg" width="300"/></td>
-    <td><img src="welcome2.jpeg" width="300"/></td>
   </tr>
   <tr>
+    <td><img src="welcome2.jpeg" width="300"/></td>
     <td><img src="welcome.jpeg" width="300"/></td>
     <td><img src="main_dark.jpeg" width="300"/></td>
   </tr>
