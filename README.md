@@ -1,6 +1,6 @@
 # SleekChat - Your Modern Chat Solution📳
 
-Welcome to SleekChat, My most technically advanced and farwell java based android application. This app isn't just an oridanry app, it reflects my coding philosophy and experience in this field. from wanting to keep the code neaty and structured and symmetric across layers to following a declarative and modular coding approach with OOP. Requirements are preset with contracts and fullfilled with implementations.
+Welcome to SleekChat, My most technically advanced and farwell java based android application. This app isn't just an ordinary app, it reflects my coding philosophy and experience in this field. from wanting to keep the code neaty and structured and symmetric across layers to following a declarative and modular coding approach with OOP. Requirements are preset with contracts and fullfilled with implementations.
 
 ## App Features 
 
