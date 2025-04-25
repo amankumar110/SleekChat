@@ -76,7 +76,7 @@ The development couldn't have completed in such a short span without the assista
     <td><img src="main_dark.jpeg" width="300"/></td>
   </tr>
   <tr>
-    <td><img src="signup.jped" width="300"/></td>
+    <td><img src="signup.jpeg" width="300"/></td>
     <td><img src="edit.jpeg" width="300"/></td>
   </tr>
 </table>
