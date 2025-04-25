@@ -35,8 +35,8 @@ The development couldn't have completed in such a short span without the assista
 
 ## Tech Stack
 
-- **Langugaes**: Java
+- **Langugaes** - Java
 - **Auth** - FirebaseAuth
-- **Database**- Firestore
-- **Realtime Database**- Firesbase Realtime Database
+- **Database** - Firestore
+- **Realtime Database** - Firesbase Realtime Database
 - **UI/UX** - XML, Material3
