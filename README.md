@@ -16,6 +16,10 @@ The app experience is unique and well crafted using material3 recommended theme 
 
 The message status is updated automatically by tracking the presence of the receiver. Right now, There are three states i.e. Sent, Seeable (receier is using the app but not in chat), and SEEN.
 
+### Push Notifications
+
+Notifications are sent and received with the message and sender's informaton to ensure ontime delivery of critical information even if the app is closed.
+
 
 ## Development Techniques
 
