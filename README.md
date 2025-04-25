@@ -28,7 +28,7 @@ Notifications are sent and received with the message and sender's informaton to 
 
 The functionality is spread across layers i.e. presentation, ViewModel, UseCase, Respository (Contracts & Impl), and Service (Data). The UseCases played a major role in datasync, filteration, and payloading.
 
-### Workers and WorkManagers
+### Workers and WorkManager
 
 To Sync live messages to the databse, I've trusted workers to ensure the sync operation takes place under special conditions and retry if failed. Some goes with messages updates and deletes. 
 
@@ -40,7 +40,7 @@ The development couldn't have completed in such a short span without the assista
 
 ## Tech Stack
 
-- **Langugaes** - Java
+- **Languages** - Java
 - **Auth** - FirebaseAuth
 - **Messaging** - Firebase Cloud Messaging
 - **Database** - Firestore
